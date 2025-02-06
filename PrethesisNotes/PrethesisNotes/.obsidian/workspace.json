@@ -1,0 +1,170 @@
+{
+  "main": {
+    "id": "d7f68264869dd8de",
+    "type": "split",
+    "children": [
+      {
+        "id": "7551bb898f5ef835",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "bb0eb97a60593e08",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "86e42b302cc657c8",
+    "type": "split",
+    "children": [
+      {
+        "id": "72960ee2144853bf",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "013cdd66030b7a89",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "edefdc8d1ca7eea6",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "a0249d96a84b03e8",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "4fb2d40b7c390717",
+    "type": "split",
+    "children": [
+      {
+        "id": "df046820cdb22ce9",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "cdc7bb4da55651fb",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "To Dos.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for To Dos"
+            }
+          },
+          {
+            "id": "41c8dd68a96cce89",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "To Dos.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from To Dos"
+            }
+          },
+          {
+            "id": "0ac638b97d0005c8",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "556eec6b812d4756",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "To Dos.md"
+              },
+              "icon": "lucide-list",
+              "title": "Outline of To Dos"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "013cdd66030b7a89",
+  "lastOpenFiles": [
+    "Vault Explanation.md",
+    "To Dos.md",
+    "Meetings/February 6th 2025.md",
+    "William",
+    "Meetings/Untitled.canvas",
+    "Meetings"
+  ]
+}
