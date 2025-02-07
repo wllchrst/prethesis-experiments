@@ -4,17 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "7551bb898f5ef835",
+        "id": "d90f6aa7c8e41388",
         "type": "tabs",
         "children": [
           {
-            "id": "bb0eb97a60593e08",
+            "id": "7e62be7d413c4c1f",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Experiments/Base Models.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "Base Models"
             }
           }
         ]
@@ -73,7 +77,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 200,
+    "collapsed": true
   },
   "right": {
     "id": "4fb2d40b7c390717",
@@ -89,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "To Dos.md",
+                "file": "Experiments/Base Models.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -99,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for To Dos"
+              "title": "Backlinks for Base Models"
             }
           },
           {
@@ -108,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "To Dos.md",
+                "file": "Experiments/Base Models.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from To Dos"
+              "title": "Outgoing links from Base Models"
             }
           },
           {
@@ -135,10 +140,10 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "To Dos.md"
+                "file": "Experiments/Base Models.md"
               },
               "icon": "lucide-list",
-              "title": "Outline of To Dos"
+              "title": "Outline of Base Models"
             }
           }
         ]
@@ -158,11 +163,14 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "013cdd66030b7a89",
+  "active": "7e62be7d413c4c1f",
   "lastOpenFiles": [
-    "Vault Explanation.md",
+    "Experiments/Datasets.md",
+    "Experiments/Base Models.md",
+    "Experiments",
     "To Dos.md",
     "Meetings/February 6th 2025.md",
+    "Vault Explanation.md",
     "William",
     "Meetings/Untitled.canvas",
     "Meetings"
