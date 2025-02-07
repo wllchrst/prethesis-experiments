@@ -1,0 +1,1 @@
+DISTIL_BERT = "distilbert-base-uncased"
