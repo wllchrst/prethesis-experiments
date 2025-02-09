@@ -1,10 +1,16 @@
 from sklearn.preprocessing import LabelEncoder
 from torch.utils.data import Dataset, DataLoader
 from transformers import AutoTokenizer
-from datasets import load_dataset
 import torch
-from interfaces import DatasetInformation
+from sklearn.model_selection import train_test_split
+from dataclasses import dataclass
+from data_loader import DataLoader
 
+@dataclass
+class DatasetSettings:
+    label_col: str
+    text_col: str
+    tokenizer_link: str
 
 class CustomDataset(Dataset):
     """
@@ -16,23 +22,22 @@ class CustomDataset(Dataset):
     - max_length: Maximum token length
     """
     
-    def __init__(self, dataset_information: DatasetInformation, max_length=512):
-        self.tokenizer = AutoTokenizer.from_pretrained(dataset_information.tokenizer_link)
-        self.dataset_information = dataset_information
+    def __init__(self, dataset_settings: DatasetSettings, data_loader: DataLoader, max_length=512):
+        self.tokenizer = AutoTokenizer.from_pretrained(dataset_settings.tokenizer_link)
+        self.settings = dataset_settings
+        self.data_loader = data_loader
         self.max_length = max_length
         self.label_encoder = LabelEncoder()
-        self.loaded = self.load_dataset()
+        self.splitted = self.split_dataset()
+        print(f'Splitted: {self.splitted}')
 
     def __len__(self):
         return len(self.data)
 
     def __getitem__(self, idx):
-        if self.loaded == False:
-            raise ValueError("The dataset has not been loaded")
-            
         sample = self.train[idx]
-        text = sample[self.dataset_information.text_col]
-        label = sample[self.dataset_information.label_col]
+        text = sample[self.settings.text_col]
+        label = sample[self.settings.label_col]
 
         encoding = self.tokenizer(
             text,
@@ -41,7 +46,6 @@ class CustomDataset(Dataset):
             max_length=self.max_length,
             return_tensors="pt"
         )
-        print(f'Tokenizing Result: {encoding}')
 
         return {
             "input_ids": encoding["input_ids"].squeeze(0),  # Remove batch dimension
@@ -49,24 +53,46 @@ class CustomDataset(Dataset):
             "labels": torch.tensor(int(label), dtype=torch.long)  # Convert label to tensor
         }
 
-    def load_dataset(self) -> bool:
+    def split_dataset(self, train_ratio=0.8, val_ratio=0.1, test_ratio=0.1, seed=42) -> bool:
         """
-        Load dataset from a link can be from kaggle or from hugging face apis
+        Split the dataset into training, validation, and testing sets.
 
-        Args: 
-        - 
+        Args:
+        - train_ratio (float): Proportion of the dataset to use for training.
+        - val_ratio (float): Proportion of the dataset to use for validation.
+        - test_ratio (float): Proportion of the dataset to use for testing.
+        - random_state (int): Seed for reproducibility.
 
         Returns:
-        - boolean
+        - bool: True if the split was successful, False otherwise.
         """
+        if not hasattr(self, "data_loader"):
+            print("Dataset is not loaded.")
+            return False
+
+        if not (0 < train_ratio < 1 and 0 < val_ratio < 1 and 0 < test_ratio < 1 and train_ratio + val_ratio + test_ratio == 1):
+            print("Invalid split ratios. Ensure they sum to 1.")
+            return False
+
+        dataset = self.data_loader.dataset
+
         try:
-            self.data = load_dataset(self.dataset_information.dataset_link)
+            # First, split into train and temp (val + test)
+            train_test_split = dataset.train_test_split(test_size=(1 - train_ratio), seed=seed, stratify_by_column=self.settings.label_col)
+            train_data = train_test_split["train"]
+            temp_data = train_test_split["test"]
 
-            self.train = self.data['train']
-            self.validation = self.data['validation']
-            self.test = self.data['test']
+            # Compute relative validation split
+            val_size = val_ratio / (val_ratio + test_ratio)  # Normalize val/test split
+            val_test_split = temp_data.train_test_split(test_size=(1 - val_size), seed=seed, stratify_by_column=self.settings.label_col)
 
+            self.train = train_data
+            self.val = val_test_split["train"]
+            self.test = val_test_split["test"]
+
+            print(f"Dataset split complete: Train({len(self.train)}), Val({len(self.val)}), Test({len(self.test)})")
             return True
-        except FileNotFoundError:
-            print(f"Error when trying to get dataset from this link: {self.dataset_information.dataset_link}")
+
+        except Exception as e:
+            print(f"Error splitting dataset: {e}")
             return False
