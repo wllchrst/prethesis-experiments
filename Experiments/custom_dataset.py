@@ -5,6 +5,7 @@ import torch
 from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
 from data_loader import DataLoader
+from collections import Counter
 
 @dataclass
 class DatasetSettings:
@@ -12,7 +13,7 @@ class DatasetSettings:
     text_col: str
     tokenizer_link: str
 
-class CustomDataset(Dataset):
+class CustomDataset:
     """
     Custom dataset class for tokenizing text data.
 
@@ -29,29 +30,32 @@ class CustomDataset(Dataset):
         self.max_length = max_length
         self.label_encoder = LabelEncoder()
         self.splitted = self.split_dataset()
+        self.tokenized = self.tokenize_datasets()
         print(f'Splitted: {self.splitted}')
+        print(f'Tokenized: {self.tokenized}')
+    
+    def count_unique_labels(self) -> int:
+        """
+        Counts the number of unique labels in the dataset.
+
+        Returns:
+        - int: The number of unique labels.
+        """
+        try:
+            label_column = self.settings.label_col
+
+            # Get unique labels from dataset
+            unique_labels = set(self.train[label_column])
+
+            print(f"Number of unique labels: {len(unique_labels)}")
+            return len(unique_labels)
+
+        except Exception as e:
+            print(f"Error counting unique labels: {e}")
+            return 0
 
     def __len__(self):
         return len(self.data)
-
-    def __getitem__(self, idx):
-        sample = self.train[idx]
-        text = sample[self.settings.text_col]
-        label = sample[self.settings.label_col]
-
-        encoding = self.tokenizer(
-            text,
-            padding="max_length",
-            truncation=True,
-            max_length=self.max_length,
-            return_tensors="pt"
-        )
-
-        return {
-            "input_ids": encoding["input_ids"].squeeze(0),  # Remove batch dimension
-            "attention_mask": encoding["attention_mask"].squeeze(0),
-            "labels": torch.tensor(int(label), dtype=torch.long)  # Convert label to tensor
-        }
 
     def split_dataset(self, train_ratio=0.8, val_ratio=0.1, test_ratio=0.1, seed=42) -> bool:
         """
@@ -95,4 +99,46 @@ class CustomDataset(Dataset):
 
         except Exception as e:
             print(f"Error splitting dataset: {e}")
+            return False
+
+    def tokenize_datasets(self):
+        """
+        Tokenizes the train, validation, and test datasets using the tokenizer.
+
+        This function modifies self.train, self.val, and self.test in-place.
+        """
+        if not hasattr(self, "train") or self.train is None:
+            print("Training dataset is not loaded.")
+            return False
+        if not hasattr(self, "val") or self.val is None:
+            print("Validation dataset is not loaded.")
+            return False
+        if not hasattr(self, "test") or self.test is None:
+            print("Testing dataset is not loaded.")
+            return False
+
+        try:
+            text_column = self.settings.text_col
+            label_column = self.settings.label_col
+            
+            # Tokenization function
+            def tokenize_function(example):
+                encoding = self.tokenizer(
+                    example[text_column],
+                    padding="max_length",
+                    truncation=True,
+                    max_length=self.max_length
+                )
+                encoding["labels"] = [torch.tensor(label, dtype=torch.long) for label in example[label_column]]
+                return encoding
+
+            self.train = self.train.map(tokenize_function, batched=True)
+            self.val = self.val.map(tokenize_function, batched=True)
+            self.test = self.test.map(tokenize_function, batched=True)
+
+            print("Tokenization complete for train, val, and test datasets.")
+            return True
+
+        except Exception as e:
+            print(f"Error tokenizing datasets: {e}")
             return False
