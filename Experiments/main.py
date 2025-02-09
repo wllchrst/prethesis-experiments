@@ -1,5 +1,6 @@
 from data_loader import DataLoader, DataLoaderSettings
 from custom_dataset import CustomDataset, DatasetSettings
+from training import train_model, TrainingInformation
 
 loader_settings = DataLoaderSettings(
     dataset_link='dair-ai/emotion',
@@ -20,6 +21,11 @@ dataset = CustomDataset(
     dataset_settings=dataset_settings
 )
 
-for batch in dataset:
-    print(batch)
-    break
+training_information = TrainingInformation(
+    pretrained_model='xlm-roberta-base'
+)
+
+# print(dataset.train[0])
+# print(dataset.count_unique_labels())
+
+train_model(dataset, training_information=training_information)
