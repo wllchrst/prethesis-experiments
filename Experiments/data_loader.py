@@ -5,13 +5,18 @@ from datasets import load_dataset, concatenate_datasets
 
 class DataLoader:
     def __init__(self, loader_settings: DataLoaderSettings):
-        self.stop_words = stopwords("english")
+        self.stop_words = stopwords.words('english')
         self.settings = loader_settings
-        pass
+        self.loaded = self.load_dataset()
+        self.processed = self.process()
 
-    def load_dataset(self):
+        print(f'Loaded: {self.loaded}')
+        print(f'Processed: {self.processed}')
+        print(self.dataset[0])
+    def load_dataset(self) -> bool:
         try:
             dataset = load_dataset(self.settings.dataset_link)
+            print(dataset)
             merged_dataset = None
 
             if not isinstance(dataset, dict):
@@ -31,10 +36,29 @@ class DataLoader:
             
             self.dataset = merged_dataset
             return True
-        except FileNotFoundError:
-            print(f'Something went wrong when trying to load dataset from link: {self.settings.dataset_link}')
+        except Exception as e:
+            print(f'Something went wrong when trying to load dataset from link {self.settings.dataset_link}')
+            print(f'Got error {e}')
             return False
         
+    def process(self) -> bool:
+        if not self.loaded:
+            raise ValueError("Dataset has not been loaded")
+        
+        def process_text(sample) -> str:
+            text = sample[self.settings.text_col]
+            words = self.tokenize(text)
+            words = self.remove_stopwords(words)
+
+            sample[self.settings.text_col] = ' '.join(words)
+            return sample
+
+        try:
+            self.dataset = self.dataset.map(process_text)
+            return True
+        except Exception as e:
+            print(e)        
+            return False
 
     def tokenize(self, text) -> list[str]:
         words = word_tokenize(text)
@@ -43,9 +67,3 @@ class DataLoader:
     def remove_stopwords(self, words) -> list[str]:
         words = [word for word in words if word not in self.stop_words and word.isalpha()]
         return words
-
-    def process_text(self, text) -> str:
-        words = self.tokenize(text)
-        words = self.remove_stopwords(words)
-
-        return ' '.join(words)
