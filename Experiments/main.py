@@ -1,16 +1,25 @@
-from custom_dataset import CustomDataset
-from interfaces import DatasetInformation
+from data_loader import DataLoader, DataLoaderSettings
+from custom_dataset import CustomDataset, DatasetSettings
 
-dataset_information = DatasetInformation(
+loader_settings = DataLoaderSettings(
   dataset_link='dair-ai/emotion',
-  dataset_type='HF', # from hugging face.
+  keys=['train', 'validation', 'test'],
   label_col='label',
-  text_col='text',
-  tokenizer_link='xlm-roberta-base'
+  text_col='text'
 )
 
-dataset = CustomDataset(dataset_information=dataset_information)
+loader = DataLoader(loader_settings=loader_settings)
+dataset_settings = DatasetSettings(
+    tokenizer_link='xlm-roberta-base',
+    label_col='label',
+    text_col='text'
+)
 
-sample = dataset[0]
+dataset = CustomDataset(
+    data_loader=loader,
+    dataset_settings=dataset_settings
+)
 
-print(sample)
+for batch in dataset:
+    print(batch)
+    break
