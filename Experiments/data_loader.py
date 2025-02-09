@@ -1,7 +1,14 @@
-from interfaces import DataLoaderSettings
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from datasets import load_dataset, concatenate_datasets
+from dataclasses import dataclass
+
+@dataclass
+class DataLoaderSettings:
+    dataset_link: str
+    keys: list[str]
+    text_col: str
+    label_col: str
 
 class DataLoader:
     def __init__(self, loader_settings: DataLoaderSettings):
@@ -12,11 +19,10 @@ class DataLoader:
 
         print(f'Loaded: {self.loaded}')
         print(f'Processed: {self.processed}')
-        print(self.dataset[0])
+
     def load_dataset(self) -> bool:
         try:
             dataset = load_dataset(self.settings.dataset_link)
-            print(dataset)
             merged_dataset = None
 
             if not isinstance(dataset, dict):
