@@ -1,6 +1,6 @@
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
-from datasets import load_dataset, concatenate_datasets
+from datasets import load_dataset, concatenate_datasets, ClassLabel
 from dataclasses import dataclass
 
 @dataclass
@@ -16,13 +16,14 @@ class DataLoader:
         self.settings = loader_settings
         self.loaded = self.load_dataset()
         self.processed = self.process()
+        self.convert_labels_to_classlabel()
 
         print(f'Loaded: {self.loaded}')
         print(f'Processed: {self.processed}')
 
     def load_dataset(self) -> bool:
         try:
-            dataset = load_dataset(self.settings.dataset_link)
+            dataset = load_dataset(self.settings.dataset_link, trust_remote_code=True)
             merged_dataset = None
 
             if not isinstance(dataset, dict):
@@ -46,6 +47,14 @@ class DataLoader:
             print(f'Something went wrong when trying to load dataset from link {self.settings.dataset_link}')
             print(f'Got error {e}')
             return False
+    
+    def convert_labels_to_classlabel(self):
+        unique_labels = list(set(self.dataset[self.settings.label_col]))
+        class_label_feature = ClassLabel(num_classes=len(unique_labels), names=[str(label) for label in unique_labels])
+
+        self.dataset = self.dataset.map(lambda example: {self.settings.label_col: class_label_feature.str2int(str(example[self.settings.label_col]))})
+        self.dataset = self.dataset.cast_column(self.settings.label_col, class_label_feature)
+        print(type(self.dataset[0]['label']))
         
     def process(self) -> bool:
         if not self.loaded:
