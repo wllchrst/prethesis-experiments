@@ -1,31 +1,42 @@
 from data_loader import DataLoader, DataLoaderSettings
 from custom_dataset import CustomDataset, DatasetSettings
 from training import train_model, TrainingInformation
+from constants import DATASETS_LINKS, DISTIL_BERT
 
-loader_settings = DataLoaderSettings(
-    dataset_link='dair-ai/emotion',
-    keys=['train', 'validation', 'test'],
-    label_col='label',
-    text_col='text'
-)
+datasets: list[CustomDataset] = []
 
-loader = DataLoader(loader_settings=loader_settings)
-dataset_settings = DatasetSettings(
-    tokenizer_link='xlm-roberta-base',
-    label_col='label',
-    text_col='text'
-)
+for dataset_link in DATASETS_LINKS:
+    print(dataset_link)
+    print('')
 
-dataset = CustomDataset(
-    data_loader=loader,
-    dataset_settings=dataset_settings
-)
+    loader_settings = DataLoaderSettings(
+        dataset_link=dataset_link,
+        keys=['train', 'validation', 'test'],
+        label_col='label',
+        text_col='text'
+    )
 
-training_information = TrainingInformation(
-    pretrained_model='xlm-roberta-base'
-)
+    loader = DataLoader(loader_settings=loader_settings)
+    print(loader.dataset[0])
 
-# print(dataset.train[0])
-# print(dataset.count_unique_labels())
+    dataset_settings = DatasetSettings(
+        tokenizer_link=DISTIL_BERT,
+        label_col='label',
+        text_col='text'
+    )
 
-train_model(dataset, training_information=training_information)
+    dataset = CustomDataset(
+        data_loader=loader,
+        dataset_settings=dataset_settings
+    )
+
+    datasets.append(dataset)
+
+for idx in range(len(datasets)):
+    print(DATASETS_LINKS[idx])
+    
+    training_information = TrainingInformation(
+        pretrained_model=DISTIL_BERT
+    )
+
+    train_model(datasets[idx], training_information=training_information)
