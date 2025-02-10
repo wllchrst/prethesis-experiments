@@ -1,11 +1,9 @@
 from sklearn.preprocessing import LabelEncoder
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 from transformers import AutoTokenizer
 import torch
-from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
 from data_loader import DataLoader
-from collections import Counter
 
 @dataclass
 class DatasetSettings:
