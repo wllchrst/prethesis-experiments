@@ -12,3 +12,6 @@ Dataset that is good but not based on the Paul Ekman Theory:
 - https://huggingface.co/datasets/philschmid/emotion
 - https://huggingface.co/datasets/SetFit/emotion
 - https://huggingface.co/datasets/mteb/emotion
+
+The last dataset that is going to be used is from Indonesia dataset
+- https://github.com/rhiosutoyo/PRDECT-ID-Indonesian-Product-Reviews-Dataset
