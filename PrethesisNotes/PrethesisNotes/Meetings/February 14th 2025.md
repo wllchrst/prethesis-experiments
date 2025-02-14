@@ -7,9 +7,8 @@ Setelah meeting kita diminta untuk melakukan experiment lagi menggunakan model-m
 Pembagian tugas untuk Experiments setelah bimbingan 14 Februari
 
 **William**
-- Bikin script buat convert data dari wav ke text langsung ke class Data Loader biar bisa langsung bisa dipake.
-**Niel**
 - Convert dataset yang tidak balance menjadi balance menggunakan augmentasi
+**Niel**
+- Bikin training outputnya menggunakan confusion matrix
 **Ayu**
 - Theory yang dapat support emotion tanpa disgust tetapi menggunakan love itu apa?
-- Bikin training nya output menggunakan confusion matrix.
