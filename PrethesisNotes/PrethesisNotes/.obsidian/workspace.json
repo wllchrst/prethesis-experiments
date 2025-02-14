@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "d90f6aa7c8e41388",
+        "id": "83a8aca33fdba381",
         "type": "tabs",
         "children": [
           {
-            "id": "7e62be7d413c4c1f",
+            "id": "617bda38e260a28f",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Experiments/Base Models.md",
+                "file": "Experiments/First Experiments/Base Models.md",
                 "mode": "source",
                 "source": false
               },
@@ -40,7 +40,8 @@
             "state": {
               "type": "file-explorer",
               "state": {
-                "sortOrder": "alphabetical"
+                "sortOrder": "alphabetical",
+                "autoReveal": false
               },
               "icon": "lucide-folder-closed",
               "title": "Files"
@@ -77,8 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "right": {
     "id": "4fb2d40b7c390717",
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Experiments/Base Models.md",
+                "file": "Experiments/First Experiments/Base Models.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -113,7 +113,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Experiments/Base Models.md",
+                "file": "Experiments/First Experiments/Base Models.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -140,7 +140,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Experiments/Base Models.md"
+                "file": "Experiments/First Experiments/Base Models.md"
               },
               "icon": "lucide-list",
               "title": "Outline of Base Models"
@@ -163,14 +163,18 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "7e62be7d413c4c1f",
+  "active": "617bda38e260a28f",
   "lastOpenFiles": [
-    "Experiments/Datasets.md",
-    "Experiments/Base Models.md",
-    "Experiments",
-    "To Dos.md",
-    "Meetings/February 6th 2025.md",
+    "Experiments/First Experiments/Datasets.md",
+    "Experiments/First Experiments/Challenges.md",
+    "Experiments/First Experiments/Base Models.md",
     "Vault Explanation.md",
+    "Meetings/February 6th 2025.md",
+    "Images",
+    "Images/Pasted image 20250214072443.png",
+    "Experiments/First Experiments",
+    "To Dos.md",
+    "Experiments",
     "William",
     "Meetings/Untitled.canvas",
     "Meetings"
