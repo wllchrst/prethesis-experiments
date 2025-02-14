@@ -1,2 +1,2 @@
-- [ ] Collect Datasets
-- [ ] Collect Pretrained Models
+- [x] Collect Datasets
+- [x] Collect Pretrained Models

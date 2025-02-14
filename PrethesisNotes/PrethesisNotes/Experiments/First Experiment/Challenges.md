@@ -3,5 +3,4 @@ Finding datasets that actually follows full the theory of paul ekman is really h
 Other options are GoEmotions (dataset from google) which consists of 27 emotions.
 
 Training XLM Roberta resource not enough, always getting error for memory.
-
 ![[Pasted image 20250214072443.png]]
