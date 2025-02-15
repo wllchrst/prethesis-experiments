@@ -1,10 +1,16 @@
+'''
+Python Script for loading data from pandas(Need to be installed first) or even kaggle.
+'''
+from dataclasses import dataclass
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from datasets import load_dataset, concatenate_datasets, ClassLabel
-from dataclasses import dataclass
 
 @dataclass
 class DataLoaderSettings:
+    '''
+    Settings or attributes that is going to be past in the data loader class contains information for dataset link, keys from the dataset (train, test, validation), text_col and label_col of the dataset
+    '''
     dataset_link: str
     keys: list[str]
     text_col: str
