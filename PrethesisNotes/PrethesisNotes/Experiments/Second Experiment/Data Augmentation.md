@@ -1,0 +1,1 @@
+Data Augmentation used for the second week experiment is going to be based on this paper https://arxiv.org/pdf/1901.11196v2 where the paper give github code to edo Data Augmentation.
