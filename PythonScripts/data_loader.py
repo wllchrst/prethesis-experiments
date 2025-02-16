@@ -1,8 +1,12 @@
 '''
 Python Script for loading data from pandas(Need to be installed first) or even kaggle.
 '''
+import pandas as pd
 from dataclasses import dataclass
 from datasets import load_dataset, concatenate_datasets
+from data_processor import DataProcessor
+from datasets import Dataset
+from collections import Counter
 
 @dataclass
 class DataLoaderSettings:
@@ -18,17 +22,32 @@ class DataLoader:
     '''
     Class for load data from hugging or csv file
     '''
-    def __init__(self, loader_settings: DataLoaderSettings):
+    def __init__(self, loader_settings: DataLoaderSettings, save_path='../Experiments/Datasets/'):
+        self.save_path = save_path
         self.settings = loader_settings
+        self.file_name = self.settings.dataset_link.replace("/", " ")
         self.loaded = self.load_dataset()
+        self.data_processor = DataProcessor()
+        self.processed = self.process_dataset()
 
-        print(f'Loaded: {self.loaded}')
+        print(f'Loaded: {self.loaded}, Processed: {self.processed}')
+        
+    def process_dataset(self, with_augmentation=True) -> bool:
+        '''
+        Process dataset using the data_processor class
+        '''
+        if not hasattr(self, 'dataset'):
+            raise AttributeError("Dataset has not been loaded")
+
+        self.dataset = self.data_processor.balance_dataset\
+            (dataset=self.dataset, dataset_name=self.settings.dataset_link.replace('/', ' '), with_augmentation=with_augmentation, text_col='text')
+
+        return True
 
     def load_dataset(self) -> bool:
         '''
         Load Dataset from a csv file or hugging face dataset
         '''
-
         try:
             dataset = load_dataset(self.settings.dataset_link, trust_remote_code=True)
             merged_dataset = None
@@ -51,6 +70,5 @@ class DataLoader:
             self.dataset = merged_dataset
             return True
         except Exception as e:
-            print(f'Something went wrong when trying to load dataset from link {self.settings.dataset_link}')
-            print(f'Got error {e}')
+            print(f'Loading {self.settings.dataset_link} Error: {e}')
             return False

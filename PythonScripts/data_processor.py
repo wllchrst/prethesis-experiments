@@ -1,14 +1,75 @@
+# import nltk
+import random
+import os
+import pandas as pd
 from datasets import ClassLabel, Dataset
 from nltk import word_tokenize 
 from nltk.corpus import stopwords
+from eda import eda
+from collections import Counter
+
+# nltk.download("wordnet")
+# nltk.download("stopwords")
 
 class DataProcessor:
     '''
     Separate Class that works with data loader for processing the data (text processing, text augmentation and other important part of the data loading process)
     '''
 
-    def __init__(self):
+    def __init__(self, save_path='../Experiments/Datasets/'):
         self.stop_words = stopwords.words("english")
+        self.save_path = save_path
+    
+    def balance_dataset(self, dataset: Dataset, dataset_name: str, with_augmentation: bool, text_col='text', label_col='label'):
+        '''
+        Balance dataset by randomly discarding data or augmenting data.
+
+        Args:
+        - dataset: Dataset, the dataset to balance.
+        - with_augmentation: bool, whether to use augmentation for balancing.
+        - text_col: str, column name containing text data.
+        - label_col: str, column name containing labels.
+
+        Returns:
+        - Dataset, balanced dataset.
+        '''
+        dataset_name += '.csv'
+        if os.path.exists(self.save_path + dataset_name):
+            df = pd.read_csv(self.save_path + dataset_name)
+            return Dataset.from_pandas(df)
+
+        # Count occurrences of each label
+        label_counts = Counter(dataset[label_col])
+        max_count = max(label_counts.values())
+
+        balanced_data = []
+        for label, count in label_counts.items():
+            # Extract rows with the current label
+            subset = [row for row in dataset if row[label_col] == label]
+
+            if with_augmentation:
+                # Augment the data to match the max count
+                while len(subset) < max_count:
+                    sample = random.choice(subset)
+                    augmented_texts = eda(sample[text_col])  # Apply augmentation
+                    for aug_text in augmented_texts:
+                        if len(subset) < max_count:
+                            augmented_sample = sample.copy()
+                            augmented_sample[text_col] = aug_text
+                            subset.append(augmented_sample)
+                        else:
+                            break
+            else:
+                # Randomly downsample if necessary
+                subset = random.sample(subset, max_count) if count > max_count else subset
+
+            balanced_data.extend(subset)
+        
+        df_balanced = pd.DataFrame(balanced_data)
+        file_name = self.save_path + dataset_name
+        df_balanced.to_csv(file_name, index=False)
+
+        return Dataset.from_list(balanced_data)
 
     def convert_labels_to_classlabel(self, dataset: Dataset, label_col: str) -> Dataset:
         '''
@@ -22,9 +83,11 @@ class DataProcessor:
         - dataset: Dataset, dataset that have been processed
         '''
         unique_labels = list(set(dataset[label_col]))
-        class_label_feature = ClassLabel(num_classes=len(unique_labels), names=[str(label) for label in unique_labels])
+        class_label_feature = ClassLabel\
+            (num_classes=len(unique_labels), names=[str(label) for label in unique_labels])
 
-        dataset = dataset.map(lambda example: {label_col: class_label_feature.str2int(str(example[label_col]))})
+        dataset = dataset\
+            .map(lambda example: {label_col: class_label_feature.str2int(str(example[label_col]))})
         dataset = dataset.cast_column(label_col, class_label_feature)
 
         return dataset
