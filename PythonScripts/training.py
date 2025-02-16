@@ -1,8 +1,10 @@
+import evaluate
+import numpy as np
+from collections import Counter
 from custom_dataset import CustomDataset
 from transformers import TrainingArguments, Trainer, AutoModelForSequenceClassification
 from dataclasses import dataclass
-import evaluate
-import numpy as np
+from datasets import Dataset
 
 @dataclass
 class TrainingInformation:
@@ -12,6 +14,19 @@ accuracy_metric = evaluate.load("accuracy")
 precision_metric = evaluate.load("precision")
 recall_metric = evaluate.load("recall")
 f1_metric = evaluate.load("f1")
+
+def print_label_counts(dataset: Dataset, label_col='label'):
+    '''
+    Prints the count of each label in the dataset.
+
+    Args:
+    - dataset: Dataset, the dataset to analyze.
+    - label_col: str, column name containing labels.
+    '''
+    label_counts = Counter(dataset[label_col])
+    print("Label counts:")
+    for label, count in label_counts.items():
+        print(f"{label}: {count}")
 
 def compute_metrics(eval_pred):
     logits, labels = eval_pred
