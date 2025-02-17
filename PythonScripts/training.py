@@ -1,4 +1,6 @@
 import evaluate
+import os
+import json
 import numpy as np
 from collections import Counter
 from custom_dataset import CustomDataset
@@ -44,6 +46,33 @@ def compute_metrics(eval_pred):
         "f1": f1["f1"]
     }
 
+def save_training_result(results: dict[str, float], training_information: "TrainingInformation") -> bool:
+    '''
+    Save results from evaluation after training using pretrained model.
+    
+    Args:
+    - results: dictionary of the evaluation results (acc, precision, and other metrics)
+    - training_information: training configuration that is going to be used for the file name.
+    
+    Returns:
+    - bool: If the saving is successful or not.
+    '''
+    try:
+        folder_name = f"results_{training_information.pretrained_model}_epoch{training_information.epoch}"
+        folder_name = folder_name.replace("/", "_").replace(" ", "_")  # Ensure safe folder name
+        os.makedirs(folder_name, exist_ok=True)
+        
+        filename = os.path.join(folder_name, "results.json")
+        
+        with open(filename, "w") as f:
+            json.dump(results, f, indent=4)
+        
+        print(f"Results saved to {filename}")
+        return True
+    except Exception as e:
+        print(f'Error saving result: {e}')
+        return False
+
 def train_model(dataset: CustomDataset, training_information: TrainingInformation):
     model = AutoModelForSequenceClassification.from_pretrained(training_information.pretrained_model, num_labels=dataset.count_unique_labels())
 
@@ -74,5 +103,4 @@ def train_model(dataset: CustomDataset, training_information: TrainingInformatio
     trainer.train()
 
     evaluation_result = trainer.evaluate(dataset.test)
-    print("EVALUATION RESULT")
     print(evaluation_result)
