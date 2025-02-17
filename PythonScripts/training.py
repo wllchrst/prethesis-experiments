@@ -7,6 +7,9 @@ from custom_dataset import CustomDataset
 from transformers import TrainingArguments, Trainer, AutoModelForSequenceClassification
 from dataclasses import dataclass
 from datasets import Dataset
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import confusion_matrix
 
 @dataclass
 class TrainingInformation:
@@ -104,3 +107,35 @@ def train_model(dataset: CustomDataset, training_information: TrainingInformatio
 
     evaluation_result = trainer.evaluate(dataset.test)
     print(evaluation_result)
+    
+    # Get predictions and labels
+    predictions = trainer.predict(dataset.test)
+    eval_pred = (predictions.predictions, predictions.label_ids)
+    
+    class_names = dataset.get_class_names()
+    generate_confusion_matrix(eval_pred, list(range(dataset.count_unique_labels())), "./results/confusion_matrix.jpeg") # TODO: Correct result path
+
+def generate_confusion_matrix(eval_pred, labels, save_path, class_names=None):
+    """
+    Generates and saves the confusion matrix as a .jpg file.
+
+    Args:
+    - eval_pred: Tuple containing (logits, labels).
+    - labels: List of unique labels.
+    - class_names: List of class names (optional).
+    - save_path: File path to save the confusion matrix image.
+    """
+    logits, true_labels = eval_pred
+    predictions = np.argmax(logits, axis=-1)
+
+    cm = confusion_matrix(true_labels, predictions, labels=labels)
+
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=class_names, yticklabels=class_names)
+    plt.xlabel("Predicted")
+    plt.ylabel("Actual")
+    plt.title("Confusion Matrix")
+
+    plt.savefig(save_path, format="jpg", dpi=300)
+    plt.close()
+    print(f"Confusion matrix saved to {save_path}")
