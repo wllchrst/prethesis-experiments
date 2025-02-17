@@ -2,18 +2,20 @@ import evaluate
 import os
 import json
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 from collections import Counter
 from custom_dataset import CustomDataset
 from transformers import TrainingArguments, Trainer, AutoModelForSequenceClassification
 from dataclasses import dataclass
 from datasets import Dataset
-import matplotlib.pyplot as plt
-import seaborn as sns
 from sklearn.metrics import confusion_matrix
 
 @dataclass
 class TrainingInformation:
     pretrained_model: str
+    epoch: int
+    dataset_name: str
 
 accuracy_metric = evaluate.load("accuracy")
 precision_metric = evaluate.load("precision")
@@ -49,7 +51,7 @@ def compute_metrics(eval_pred):
         "f1": f1["f1"]
     }
 
-def save_training_result(results: dict[str, float], training_information: "TrainingInformation") -> bool:
+def save_training_result(results: dict[str, float], training_information: "TrainingInformation") -> str:
     '''
     Save results from evaluation after training using pretrained model.
     
@@ -62,26 +64,26 @@ def save_training_result(results: dict[str, float], training_information: "Train
     '''
     try:
         folder_name = f"results_{training_information.pretrained_model}_epoch{training_information.epoch}"
-        folder_name = folder_name.replace("/", "_").replace(" ", "_")  # Ensure safe folder name
+        folder_name = folder_name.replace("/", "_").replace(" ", "_")
         os.makedirs(folder_name, exist_ok=True)
-        
+     
         filename = os.path.join(folder_name, "results.json")
         
         with open(filename, "w") as f:
             json.dump(results, f, indent=4)
         
         print(f"Results saved to {filename}")
-        return True
+        return folder_name 
     except Exception as e:
         print(f'Error saving result: {e}')
-        return False
+        return ""
 
 def train_model(dataset: CustomDataset, training_information: TrainingInformation):
     model = AutoModelForSequenceClassification.from_pretrained(training_information.pretrained_model, num_labels=dataset.count_unique_labels())
 
     training_args = TrainingArguments(
         output_dir="./results",
-        num_train_epochs=3,
+        num_train_epochs=training_information.epoch,
         per_device_train_batch_size=8,
         per_device_eval_batch_size=8,
         warmup_steps=500,
@@ -90,7 +92,7 @@ def train_model(dataset: CustomDataset, training_information: TrainingInformatio
         logging_steps=10,
         evaluation_strategy="epoch",
         logging_strategy="epoch",
-        save_strategy="epoch",        # ✅ Saves the model after each epoch
+        save_strategy="epoch",
         report_to="none"
     )
 
@@ -101,19 +103,18 @@ def train_model(dataset: CustomDataset, training_information: TrainingInformatio
         eval_dataset=dataset.test,
         compute_metrics=compute_metrics
     )
-    # trainer.add_callback(LoggingCallback())
 
     trainer.train()
 
     evaluation_result = trainer.evaluate(dataset.test)
+    folder_path = save_training_result(evaluation_result, training_information)
     print(evaluation_result)
-    
-    # Get predictions and labels
+
     predictions = trainer.predict(dataset.test)
     eval_pred = (predictions.predictions, predictions.label_ids)
     
     class_names = dataset.get_class_names()
-    generate_confusion_matrix(eval_pred, list(range(dataset.count_unique_labels())), "./results/confusion_matrix.jpeg") # TODO: Correct result path
+    generate_confusion_matrix(eval_pred, list(range(dataset.count_unique_labels())), os.path.join(folder_path, "confusion_matrix.jpeg"), class_names)
 
 def generate_confusion_matrix(eval_pred, labels, save_path, class_names=None):
     """
