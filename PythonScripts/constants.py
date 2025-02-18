@@ -1,9 +1,22 @@
+from dataclasses import dataclass
+
+@dataclass
+class DatasetInformation:
+    link: str
+    hf_dataset: True
+    augment: True
+
 DISTIL_BERT = "distilbert-base-uncased"
 
-DATASETS_LINKS: list[str] = [
-    'AdamCodd/emotion-balanced',
-    'dair-ai/emotion',
-    # 'philschmid/emotion',
-    'SetFit/emotion',
-    'mteb/emotion'
+MODELS = [
+    "distilbert-base-uncased",
+    "roberta-base",
+    "bert-base-uncased",
+    "xlnet-base-cased"
+]
+
+DATASETS: list[DatasetInformation] = [
+    DatasetInformation('dair-ai/emotion', True, True),
+    DatasetInformation('../Experiments/Datasets/indo-data-review.csv', False, False),
+    DatasetInformation('../Experiments/Datasets/process_data.csv', False, True),
 ]
