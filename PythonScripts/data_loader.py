@@ -17,6 +17,7 @@ class DataLoaderSettings:
     keys: list[str]
     text_col: str
     label_col: str
+    with_augmentation: bool
 
 class DataLoader:
     '''
@@ -26,10 +27,10 @@ class DataLoader:
         self.save_path = save_path
         self.settings = loader_settings
         self.file_name = self.settings.dataset_link.replace("/", " ")
-        self.loaded = self.load_dataset()
         self.data_processor = DataProcessor()
-        self.processed = self.process_dataset()
-
+        self.loaded = self.load_dataset()
+        self.processed = self.process_dataset(self.settings.with_augmentation)
+        
         print(f'Loaded: {self.loaded}, Processed: {self.processed}')
         
     def process_dataset(self, with_augmentation=True) -> bool:
@@ -38,10 +39,19 @@ class DataLoader:
         '''
         if not hasattr(self, 'dataset'):
             raise AttributeError("Dataset has not been loaded")
-
+        
+        self.class_names = self.dataset.features[self.settings.label_col].names
+        
+        self.dataset = self.data_processor.process_text\
+            (dataset=self.dataset, text_col=self.settings.text_col)
+            
         self.dataset = self.data_processor.balance_dataset\
             (dataset=self.dataset, dataset_name=self.settings.dataset_link.replace('/', ' '), with_augmentation=with_augmentation, text_col='text')
-
+        
+        self.dataset = self.data_processor.convert_labels_to_classlabel\
+            (dataset=self.dataset, label_col=self.settings.label_col)
+            
+        print(self.dataset.features[self.settings.label_col])
         return True
 
     def load_dataset(self) -> bool:

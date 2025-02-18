@@ -54,6 +54,9 @@ class CustomDataset:
 
     def __len__(self):
         return len(self.data)
+    
+    def get_class_names(self):
+        return self.data_loader.class_names
 
     def split_dataset(self, train_ratio=0.8, val_ratio=0.1, test_ratio=0.1, seed=42) -> bool:
         """
@@ -77,7 +80,7 @@ class CustomDataset:
             return False
 
         dataset = self.data_loader.dataset
-
+        
         try:
             # First, split into train and temp (val + test)
             train_test_split = dataset.train_test_split(test_size=(1 - train_ratio), seed=seed, stratify_by_column=self.settings.label_col)
