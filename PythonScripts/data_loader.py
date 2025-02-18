@@ -18,6 +18,7 @@ class DataLoaderSettings:
     text_col: str
     label_col: str
     with_augmentation: bool
+    hf_dataset: bool = True
 
 class DataLoader:
     '''
