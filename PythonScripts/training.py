@@ -51,7 +51,8 @@ def compute_metrics(eval_pred):
         "f1": f1["f1"]
     }
 
-def save_training_result(results: dict[str, float], training_information: "TrainingInformation", dataset_augmented: bool) -> str:
+def save_training_result(results: dict[str, float], training_information: "TrainingInformation"\
+    , dataset_augmented: bool, dataset_name: str, save_path='../Experiments/February14th/') -> str:
     '''
     Save results from evaluation after training using pretrained model.
     
@@ -64,8 +65,9 @@ def save_training_result(results: dict[str, float], training_information: "Train
     '''
     augmented_string = "_Augmented" if dataset_augmented else "" 
     try:
-        folder_name = f"results_{training_information.pretrained_model}_epoch{training_information.epoch}{augmented_string}"
+        folder_name = f"results_{training_information.pretrained_model}_epoch{training_information.epoch}{augmented_string}_{dataset_name}"
         folder_name = folder_name.replace("/", "_").replace(" ", "_")
+        folder_name = os.path.join(save_path, folder_name)
         os.makedirs(folder_name, exist_ok=True)
      
         filename = os.path.join(folder_name, "results.json")
@@ -91,7 +93,7 @@ def train_model(dataset: CustomDataset, training_information: TrainingInformatio
         weight_decay=0.01,
         logging_dir="./logs",
         logging_steps=10,
-        evaluation_strategy="epoch",
+        eval_strategy="epoch",
         logging_strategy="epoch",
         save_strategy="epoch",
         report_to="none"
@@ -109,7 +111,8 @@ def train_model(dataset: CustomDataset, training_information: TrainingInformatio
 
     evaluation_result = trainer.evaluate(dataset.test)
     folder_path = save_training_result(evaluation_result, training_information,\
-        dataset_augmented=dataset.data_loader.settings.with_augmentation)
+        dataset_augmented=dataset.data_loader.settings.with_augmentation\
+            , dataset_name=dataset.data_loader.settings.dataset_link.replace("/", "").replace(".", ""))
 
     predictions = trainer.predict(dataset.test)
     eval_pred = (predictions.predictions, predictions.label_ids)

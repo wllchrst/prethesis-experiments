@@ -39,7 +39,7 @@ class DataProcessor:
         dataset_name += '.csv'
         file_name = self.save_path + augmented_desc + dataset_name
         if os.path.exists(file_name) and with_augmentation:
-            df = pd.read_csv(self.save_path + dataset_name)
+            df = pd.read_csv(file_name)
             return Dataset.from_pandas(df)
 
         # Count occurrences of each label
