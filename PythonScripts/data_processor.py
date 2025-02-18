@@ -1,4 +1,4 @@
-# import nltk
+import nltk
 import random
 import os
 import pandas as pd
@@ -8,8 +8,9 @@ from nltk.corpus import stopwords
 from eda import eda
 from collections import Counter
 
-# nltk.download("wordnet")
-# nltk.download("stopwords")
+nltk.download("wordnet")
+nltk.download("stopwords")
+nltk.download("punkt_tab")
 
 class DataProcessor:
     '''
@@ -26,6 +27,7 @@ class DataProcessor:
 
         Args:
         - dataset: Dataset, the dataset to balance.
+        - dataset_name: str, name of the dataset file.
         - with_augmentation: bool, whether to use augmentation for balancing.
         - text_col: str, column name containing text data.
         - label_col: str, column name containing labels.
@@ -33,14 +35,17 @@ class DataProcessor:
         Returns:
         - Dataset, balanced dataset.
         '''
+        augmented_desc = "_augmented" if with_augmentation else ""
         dataset_name += '.csv'
-        if os.path.exists(self.save_path + dataset_name):
+        file_name = self.save_path + augmented_desc + dataset_name
+        if os.path.exists(file_name) and with_augmentation:
             df = pd.read_csv(self.save_path + dataset_name)
             return Dataset.from_pandas(df)
 
         # Count occurrences of each label
         label_counts = Counter(dataset[label_col])
         max_count = max(label_counts.values())
+        min_count = min(label_counts.values())  # Get the smallest label count
 
         balanced_data = []
         for label, count in label_counts.items():
@@ -61,15 +66,16 @@ class DataProcessor:
                             break
             else:
                 # Randomly downsample if necessary
-                subset = random.sample(subset, max_count) if count > max_count else subset
+                if count > min_count:  
+                    subset = random.sample(subset, min_count)
 
             balanced_data.extend(subset)
-        
+
         df_balanced = pd.DataFrame(balanced_data)
-        file_name = self.save_path + dataset_name
         df_balanced.to_csv(file_name, index=False)
 
         return Dataset.from_list(balanced_data)
+
 
     def convert_labels_to_classlabel(self, dataset: Dataset, label_col: str) -> Dataset:
         '''
@@ -92,7 +98,7 @@ class DataProcessor:
 
         return dataset
 
-    def process_text(self, dataset: Dataset, text_col: str) -> bool:
+    def process_text(self, dataset: Dataset, text_col: str) -> Dataset:
         '''
         Process text column from the dataset, actions: Remove Stop Words, and non alphabetic words
         
@@ -109,7 +115,7 @@ class DataProcessor:
             return sample
 
         dataset = dataset.map(process_text)
-        return True
+        return dataset
 
     def tokenize(self, text: str) -> list[str]:
         '''
