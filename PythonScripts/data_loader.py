@@ -5,7 +5,7 @@ import pandas as pd
 from dataclasses import dataclass
 from datasets import load_dataset, concatenate_datasets
 from data_processor import DataProcessor
-from datasets import Dataset
+from datasets import Dataset, ClassLabel
 from collections import Counter
 
 @dataclass
@@ -39,7 +39,7 @@ class DataLoader:
         '''
         if not hasattr(self, 'dataset'):
             raise AttributeError("Dataset has not been loaded")
-        
+        print(self.dataset.features[self.settings.label_col])
         self.class_names = self.dataset.features[self.settings.label_col].names
         
         self.dataset = self.data_processor.process_text\
@@ -50,14 +50,26 @@ class DataLoader:
         
         self.dataset = self.data_processor.convert_labels_to_classlabel\
             (dataset=self.dataset, label_col=self.settings.label_col)
-            
-        print(self.dataset.features[self.settings.label_col])
         return True
 
     def load_dataset(self) -> bool:
         '''
         Load Dataset from a csv file or hugging face dataset
         '''
+        if not self.settings.hf_dataset:
+            try:
+                df = pd.read_csv(self.settings.dataset_link)
+                
+                labels = list(df['label'].unique())
+                class_label = ClassLabel(names=labels)
+                df['label'] = df['label'].apply(lambda x: labels.index(x))
+                
+                self.dataset = Dataset.from_pandas(df)
+                self.dataset = self.dataset.cast_column("label", class_label)
+                return True
+            except Exception as e:
+                print(f"Loading dataset went wrong: {e}")
+                return False
         try:
             dataset = load_dataset(self.settings.dataset_link, trust_remote_code=True)
             merged_dataset = None
