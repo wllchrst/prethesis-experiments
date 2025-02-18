@@ -51,7 +51,7 @@ def compute_metrics(eval_pred):
         "f1": f1["f1"]
     }
 
-def save_training_result(results: dict[str, float], training_information: "TrainingInformation") -> str:
+def save_training_result(results: dict[str, float], training_information: "TrainingInformation", dataset_augmented: bool) -> str:
     '''
     Save results from evaluation after training using pretrained model.
     
@@ -62,8 +62,9 @@ def save_training_result(results: dict[str, float], training_information: "Train
     Returns:
     - bool: If the saving is successful or not.
     '''
+    augmented_string = "_Augmented" if dataset_augmented else "" 
     try:
-        folder_name = f"results_{training_information.pretrained_model}_epoch{training_information.epoch}"
+        folder_name = f"results_{training_information.pretrained_model}_epoch{training_information.epoch}{augmented_string}"
         folder_name = folder_name.replace("/", "_").replace(" ", "_")
         os.makedirs(folder_name, exist_ok=True)
      
@@ -80,7 +81,7 @@ def save_training_result(results: dict[str, float], training_information: "Train
 
 def train_model(dataset: CustomDataset, training_information: TrainingInformation):
     model = AutoModelForSequenceClassification.from_pretrained(training_information.pretrained_model, num_labels=dataset.count_unique_labels())
-
+    print_label_counts(dataset=dataset.train, label_col=dataset.settings.label_col)
     training_args = TrainingArguments(
         output_dir="./results",
         num_train_epochs=training_information.epoch,
@@ -107,8 +108,8 @@ def train_model(dataset: CustomDataset, training_information: TrainingInformatio
     trainer.train()
 
     evaluation_result = trainer.evaluate(dataset.test)
-    folder_path = save_training_result(evaluation_result, training_information)
-    print(evaluation_result)
+    folder_path = save_training_result(evaluation_result, training_information,\
+        dataset_augmented=dataset.data_loader.settings.with_augmentation)
 
     predictions = trainer.predict(dataset.test)
     eval_pred = (predictions.predictions, predictions.label_ids)
