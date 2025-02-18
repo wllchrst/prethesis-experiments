@@ -4,6 +4,7 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import torch
 from collections import Counter
 from custom_dataset import CustomDataset
 from transformers import TrainingArguments, Trainer, AutoModelForSequenceClassification
@@ -82,6 +83,7 @@ def save_training_result(results: dict[str, float], training_information: "Train
         return ""
 
 def train_model(dataset: CustomDataset, training_information: TrainingInformation):
+    torch.cuda.empty_cache()
     model = AutoModelForSequenceClassification.from_pretrained(training_information.pretrained_model, num_labels=dataset.count_unique_labels())
     print_label_counts(dataset=dataset.train, label_col=dataset.settings.label_col)
     training_args = TrainingArguments(
