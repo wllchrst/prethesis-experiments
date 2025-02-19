@@ -84,6 +84,7 @@ def save_training_result(results: dict[str, float], training_information: "Train
 
 def train_model(dataset: CustomDataset, training_information: TrainingInformation):
     torch.cuda.empty_cache()
+    model = AutoModelForSequenceClassification.from_pretrained(training_information.pretrained_model, num_labels=dataset.count_unique_labels())
     
     if torch.cuda.is_available():
         print(f"Training model is using GPU {torch.cuda.get_device_name(0)}")
@@ -92,7 +93,6 @@ def train_model(dataset: CustomDataset, training_information: TrainingInformatio
     else:
         print(f'Training model is using CPU')
 
-    model = AutoModelForSequenceClassification.from_pretrained(training_information.pretrained_model, num_labels=dataset.count_unique_labels())
     print_label_counts(dataset=dataset.train, label_col=dataset.settings.label_col)
     training_args = TrainingArguments(
         output_dir="./results",
