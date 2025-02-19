@@ -12,14 +12,15 @@ if __name__ == "__main__":
                 label_col='label',
                 text_col='text',
                 with_augmentation=dataset_info.augment,
-                hf_dataset=dataset_info.hf_dataset
+                hf_dataset=dataset_info.hf_dataset,
+                with_balancing=dataset_info.with_balancing
             )
         
         data_loader = DataLoader(loader_settings)
 
         for model in MODELS:
             dataset_settings = DatasetSettings(
-                label_col='label',
+                label_col='label', 
                 text_col='text',
                 tokenizer_link=model
             )

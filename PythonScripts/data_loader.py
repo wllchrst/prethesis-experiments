@@ -19,6 +19,7 @@ class DataLoaderSettings:
     label_col: str
     with_augmentation: bool
     hf_dataset: bool = True
+    with_balancing: bool = True
 
 class DataLoader:
     '''
@@ -45,9 +46,10 @@ class DataLoader:
         
         self.dataset = self.data_processor.process_text\
             (dataset=self.dataset, text_col=self.settings.text_col)
-            
-        self.dataset = self.data_processor.balance_dataset\
-            (dataset=self.dataset, dataset_name=self.settings.dataset_link.replace('/', ' '), with_augmentation=with_augmentation, text_col='text')
+        
+        if self.settings.with_balancing:
+            self.dataset = self.data_processor.balance_dataset\
+                (dataset=self.dataset, dataset_name=self.settings.dataset_link.replace('/', ' '), with_augmentation=with_augmentation, text_col='text')
         
         self.dataset = self.data_processor.convert_labels_to_classlabel\
             (dataset=self.dataset, label_col=self.settings.label_col)
