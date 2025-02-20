@@ -65,9 +65,10 @@ def save_training_result(results: dict[str, float], training_information: "Train
     Returns:
     - bool: If the saving is successful or not.
     '''
+    balance_string = "_balance" if balanced else ""
     augmented_string = "_Augmented" if dataset_augmented else "" 
     try:
-        folder_name = f"results_{training_information.pretrained_model}_epoch{training_information.epoch}{augmented_string}_{dataset_name}"
+        folder_name = f"results_{training_information.pretrained_model}_epoch{training_information.epoch}{augmented_string}_{dataset_name}{balance_string}"
         folder_name = folder_name.replace("/", "_").replace(" ", "_")
         folder_name = os.path.join(save_path, folder_name)
         os.makedirs(folder_name, exist_ok=True)
