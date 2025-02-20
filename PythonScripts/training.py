@@ -1,5 +1,6 @@
 import evaluate
 import os
+import gc
 import json
 import numpy as np
 import matplotlib.pyplot as plt
@@ -53,7 +54,7 @@ def compute_metrics(eval_pred):
     }
 
 def save_training_result(results: dict[str, float], training_information: "TrainingInformation"\
-    , dataset_augmented: bool, dataset_name: str, save_path='../Experiments/February14th/') -> str:
+    , dataset_augmented: bool, dataset_name: str, save_path='../Experiments/February14th/', balanced=True) -> str:
     '''
     Save results from evaluation after training using pretrained model.
     
@@ -116,6 +117,8 @@ def train_model(dataset: CustomDataset, training_information: TrainingInformatio
         eval_dataset=dataset.test,
         compute_metrics=compute_metrics
     )
+    
+    print(gc.collect())
 
     trainer.train()
 
