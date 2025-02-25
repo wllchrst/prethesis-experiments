@@ -1,3 +1,8 @@
+'''
+Script to load dataset from github Indonesian Language
+LINK:
+https://github.com/rhiosutoyo/PRDECT-ID-Indonesian-Product-Reviews-Dataset
+'''
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 
