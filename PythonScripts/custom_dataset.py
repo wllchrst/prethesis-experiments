@@ -80,7 +80,6 @@ class CustomDataset:
             return False
 
         dataset = self.data_loader.dataset
-        
         try:
             # First, split into train and temp (val + test)
             train_test_split = dataset.train_test_split(test_size=(1 - train_ratio), seed=seed, stratify_by_column=self.settings.label_col)

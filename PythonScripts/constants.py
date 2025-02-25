@@ -17,7 +17,7 @@ MODELS = [
 ]
 
 DATASETS: list[DatasetInformation] = [
-    # DatasetInformation('dair-ai/emotion', True, True),
-    DatasetInformation('../Experiments/Datasets/indo-data-review.csv', False, False, False),
+    DatasetInformation('dair-ai/emotion', True, True),
+    # DatasetInformation('../Experiments/Datasets/indo-data-review.csv', False, False, False),
     # DatasetInformation('../Experiments/Datasets/process_data.csv', False, True),
 ]

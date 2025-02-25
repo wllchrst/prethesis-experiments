@@ -18,12 +18,24 @@ class DataLoaderSettings:
     text_col: str
     label_col: str
     with_augmentation: bool
+    columns_to_drop: list[str]
     hf_dataset: bool = True
     with_balancing: bool = True
+    with_details: bool = True
+    from_cache: bool = False
 
 class DataLoader:
     '''
     Class for load data from hugging or csv file
+
+    Steps of the data loader.
+    - Load dataset
+    - Process dataset
+        - Drop columns
+        - Process text from dataset
+        - Balance dataset either with augmentation or dropping data
+        - convert the label to ClassLabel type
+        - Print Dataset Detail
     '''
     def __init__(self, loader_settings: DataLoaderSettings, save_path='../Experiments/Datasets/'):
         self.save_path = save_path
@@ -32,18 +44,19 @@ class DataLoader:
         self.data_processor = DataProcessor()
         self.loaded = self.load_dataset()
         self.processed = self.process_dataset(self.settings.with_augmentation)
-        
-        print(f'Loaded: {self.loaded}, Processed: {self.processed}')
+        self.dataset_detail()
         
     def process_dataset(self, with_augmentation=True) -> bool:
         '''
         Process dataset using the data_processor class
         '''
+        print("Before Processing")
+        self.dataset_detail()
         if not hasattr(self, 'dataset'):
             raise AttributeError("Dataset has not been loaded")
-        print(self.dataset.features[self.settings.label_col])
-        self.class_names = self.dataset.features[self.settings.label_col].names
-        
+
+        self.dataset = self.data_processor.drop_column_from_dataset(self.settings.columns_to_drop, self.dataset)
+
         self.dataset = self.data_processor.process_text\
             (dataset=self.dataset, text_col=self.settings.text_col)
         
@@ -56,6 +69,7 @@ class DataLoader:
         return True
 
     def load_dataset(self) -> bool:
+
         '''
         Load Dataset from a csv file or hugging face dataset
         '''
@@ -66,9 +80,10 @@ class DataLoader:
                 labels = list(df['label'].unique())
                 class_label = ClassLabel(names=labels)
                 df['label'] = df['label'].apply(lambda x: labels.index(x))
-                
+
                 self.dataset = Dataset.from_pandas(df)
                 self.dataset = self.dataset.cast_column("label", class_label)
+                self.class_names = self.dataset.features[self.settings.label_col].names
                 return True
             except Exception as e:
                 print(f"Loading dataset went wrong: {e}")
@@ -93,7 +108,35 @@ class DataLoader:
                     merged_dataset = concatenate_datasets([merged_dataset, dataset_partition])
             
             self.dataset = merged_dataset
+            self.class_names = self.dataset.features[self.settings.label_col].names
             return True
         except Exception as e:
             print(f'Loading {self.settings.dataset_link} Error: {e}')
             return False
+
+    def dataset_detail(self) -> None:
+        """
+        Print Out Details of the dataset
+        """
+        if not self.settings.with_details:
+            return None
+
+        print("="*80)
+        print("Dataset Detail")
+        print("")
+
+        label_counts = Counter(self.dataset[self.settings.label_col])
+        print("Label counts:")
+        for label, count in label_counts.items():
+            print(f"{label}: {count}")
+
+        print("Examples of Text each Label")
+
+        for label_key in label_counts.keys():
+            examples = self.dataset.filter(lambda x: x[self.settings.label_col] == label)[self.settings.text_col][
+                       :3]  # Get first 3 examples
+            print(f"\nLabel: {self.class_names[label_key]}")
+            for i, example in enumerate(examples, 1):
+                print(f"  {i}. {example}")
+
+        print("="*80)
