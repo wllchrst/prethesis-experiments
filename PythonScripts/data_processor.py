@@ -21,7 +21,7 @@ class DataProcessor:
         self.stop_words = stopwords.words("english")
         self.save_path = save_path
     
-    def balance_dataset(self, dataset: Dataset, dataset_name: str, with_augmentation: bool, text_col='text', label_col='label'):
+    def balance_dataset(self, dataset: Dataset, dataset_name: str, with_augmentation: bool, text_col='text', label_col='label', from_cache=False):
         '''
         Balance dataset by randomly discarding data or augmenting data.
 
@@ -38,7 +38,7 @@ class DataProcessor:
         augmented_desc = "_augmented" if with_augmentation else ""
         dataset_name += '.csv'
         file_name = self.save_path + augmented_desc + dataset_name
-        if os.path.exists(file_name) and with_augmentation:
+        if os.path.exists(file_name) and with_augmentation and from_cache:
             df = pd.read_csv(file_name)
             return Dataset.from_pandas(df)
 
@@ -56,7 +56,7 @@ class DataProcessor:
                 # Augment the data to match the max count
                 while len(subset) < max_count:
                     sample = random.choice(subset)
-                    augmented_texts = eda(sample[text_col])  # Apply augmentation
+                    augmented_texts = eda(sample[text_col], num_aug=3)
                     for aug_text in augmented_texts:
                         if len(subset) < max_count:
                             augmented_sample = sample.copy()
@@ -144,3 +144,14 @@ class DataProcessor:
 
         words = [word for word in words if word not in self.stop_words and word.isalpha()]
         return words
+
+    def drop_column_from_dataset(self, columns: list[str], dataset: Dataset) -> Dataset :
+        """
+        Drop all data in "dataset" from the column in columns
+
+        Args:
+            - columns: list[str], list of the column that is going to be deleted
+            - dataset: Dataset, dataset that is going to be modified in this function
+        """
+
+        return dataset.remove_columns(columns)
