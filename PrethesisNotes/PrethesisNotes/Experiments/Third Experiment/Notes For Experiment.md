@@ -1,0 +1,1 @@
+Previous week augmentation result from the function is up to 8, now for this week experiment the amount of sentence that can be augmented from a single sentence is limited to 3.

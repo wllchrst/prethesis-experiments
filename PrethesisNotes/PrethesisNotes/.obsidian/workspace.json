@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "d63d12fa2fc4d6cb",
+        "id": "c14c426ead976185",
         "type": "tabs",
         "children": [
           {
-            "id": "5577dcae47327289",
+            "id": "6798cc9650c4c994",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Meetings/February 14th 2025.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "February 14th 2025"
+              "title": "New tab"
             }
           }
         ]
@@ -163,19 +159,24 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "5577dcae47327289",
+  "active": "6798cc9650c4c994",
   "lastOpenFiles": [
-    "Experiments/Second Experiment/Datasets.md",
-    "Experiments/First Experiment/Challenges.md",
+    "Experiments/Third Experiment/Notes For Experiment.md",
     "Experiments/First Experiment/Datasets.md",
+    "Experiments/Third Experiment/Datasets.md",
+    "Meetings/February 25th 2025.md",
+    "Meetings/February 14th 2025.md",
+    "Meetings/February 6th 2025.md",
+    "Experiments/Third Experiment",
+    "Experiments/Second Experiment/Datasets.md",
+    "Experiments/Second Experiment/Data Augmentation.md",
+    "Experiments/First Experiment/Challenges.md",
     "Images/Pasted image 20250214072443.png",
     "Experiments/Second Experiment/Untitled",
     "Experiments/Second Experiment",
-    "Meetings/February 14th 2025.md",
     "Experiments/First Experiment/Base Models.md",
     "To Dos.md",
     "Vault Explanation.md",
-    "Meetings/February 6th 2025.md",
     "Images",
     "Experiments/First Experiment",
     "Experiments",
