@@ -152,13 +152,40 @@ class DataProcessor:
         words = [word for word in words if word not in self.stop_words and word.isalpha()]
         return words
 
-    def drop_column_from_dataset(self, columns: list[str], dataset: Dataset) -> Dataset :
+    def drop_label_from_dataset(self, labels: list[int], label_col: str, dataset: Dataset) -> Dataset:
         """
-        Drop all data in "dataset" from the column in columns
+        Drop all samples from the dataset that match any label in the provided list.
 
         Args:
-            - columns: list[str], list of the column that is going to be deleted
-            - dataset: Dataset, dataset that is going to be modified in this function
-        """
+            labels (list[str]): List of labels to be removed.
+            dataset (Dataset): The dataset to filter.
 
-        return dataset.remove_columns(columns)
+        Returns:
+            Dataset: A new dataset with the specified labels removed.
+        """
+        # Convert labels to a set for faster lookup
+        labels_to_remove = set(labels)
+
+        # Debug: Check unique labels in the dataset
+        unique_labels = set(dataset[label_col])
+        print(f"Unique labels before filtering: {unique_labels}")
+        print(f"Labels to remove: {labels_to_remove}")
+
+        # Check for potential type mismatch issues
+        sample_label = dataset[0][label_col]
+        print(f"Sample label type: {type(sample_label)}, Label values: {sample_label}")
+
+        # Ensure the labels are of the same type as dataset labels
+        if isinstance(sample_label, int):
+            labels_to_remove = {int(label) for label in labels_to_remove}
+        elif isinstance(sample_label, str):
+            labels_to_remove = {str(label) for label in labels_to_remove}
+
+        # Perform filtering
+        filtered_dataset = dataset.filter(lambda example: example[label_col] not in labels_to_remove)
+
+        # Debug: Check unique labels after filtering
+        unique_labels_after = set(filtered_dataset[label_col])
+        print(f"Unique labels after filtering: {unique_labels_after}")
+
+        return filtered_dataset

@@ -12,7 +12,7 @@ if __name__ == "__main__":
                 keys=['train', 'test', 'validation'],
                 label_col='label',
                 text_col='text',
-                columns_to_drop=[],
+                labels_to_drop=[3,5],
                 from_cache=False,
                 with_augmentation=dataset_info.augment,
                 hf_dataset=dataset_info.hf_dataset,
@@ -22,6 +22,7 @@ if __name__ == "__main__":
             )
 
         data_loader = DataLoader(loader_settings)
+
         for model in MODELS:
             dataset_settings = DatasetSettings(
                 label_col='label',

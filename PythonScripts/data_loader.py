@@ -18,7 +18,7 @@ class DataLoaderSettings:
     text_col: str
     label_col: str
     with_augmentation: bool
-    columns_to_drop: list[str]
+    labels_to_drop: list[int]
     hf_dataset: bool = True
     with_balancing: bool = True
     with_details: bool = True
@@ -56,8 +56,6 @@ class DataLoader:
         if not hasattr(self, 'dataset'):
             raise AttributeError("Dataset has not been loaded")
 
-        self.dataset = self.data_processor.drop_column_from_dataset(self.settings.columns_to_drop, self.dataset)
-
         self.dataset = self.data_processor.process_text\
             (dataset=self.dataset, text_col=self.settings.text_col)
         
@@ -84,6 +82,10 @@ class DataLoader:
 
                 self.dataset = Dataset.from_pandas(df)
                 self.dataset = self.dataset.cast_column("label", class_label)
+
+                self.dataset = self.data_processor.drop_label_from_dataset\
+                    (self.settings.labels_to_drop, self.settings.label_col, self.dataset)
+
                 self.class_names = self.dataset.features[self.settings.label_col].names
                 return True
             except Exception as e:
@@ -109,6 +111,8 @@ class DataLoader:
                     merged_dataset = concatenate_datasets([merged_dataset, dataset_partition])
             
             self.dataset = merged_dataset
+
+            self.dataset = self.data_processor.drop_label_from_dataset(self.settings.labels_to_drop, self.settings.label_col, self.dataset)
             self.class_names = self.dataset.features[self.settings.label_col].names
             return True
         except Exception as e:
@@ -129,7 +133,7 @@ class DataLoader:
         
         print("Label counts:")
         for label, count in label_counts.items():
-            print(f"{label}: {count}")
+            print(f"{self.class_names[label]}: {count}")
 
         print("\nExamples of Text for Each Label:")
         
