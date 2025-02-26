@@ -17,11 +17,11 @@ if __name__ == "__main__":
                 with_augmentation=dataset_info.augment,
                 hf_dataset=dataset_info.hf_dataset,
                 with_balancing=dataset_info.with_balancing,
-                is_indonesian=dataset_info.is_indonesian
+                is_indonesian=dataset_info.is_indonesian,
+                with_details=True,
             )
 
         data_loader = DataLoader(loader_settings)
-
         for model in MODELS:
             dataset_settings = DatasetSettings(
                 label_col='label',
