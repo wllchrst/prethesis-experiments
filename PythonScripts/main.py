@@ -16,7 +16,8 @@ if __name__ == "__main__":
                 from_cache=False,
                 with_augmentation=dataset_info.augment,
                 hf_dataset=dataset_info.hf_dataset,
-                with_balancing=dataset_info.with_balancing
+                with_balancing=dataset_info.with_balancing,
+                is_indonesian=dataset_info.is_indonesian
             )
 
         data_loader = DataLoader(loader_settings)

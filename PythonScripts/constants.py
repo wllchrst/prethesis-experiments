@@ -6,18 +6,18 @@ class DatasetInformation:
     hf_dataset: bool = True
     augment: bool = True
     with_balancing: bool = True
+    is_indonesian: bool = False
 
 MODELS = [
-    # "distilbert-base-uncased",
-    # "roberta-base",
-    # "bert-base-uncased",
+    "distilbert-base-uncased",
+    "roberta-base",
+    "bert-base-uncased",
     # "xlnet-base-cased",
-    "indobenchmark/indobert-base-p1",
-    "indobenchmark/indobert-large-p1"
+    # "indobenchmark/indobert-base-p1",
 ]
 
 DATASETS: list[DatasetInformation] = [
-    DatasetInformation('dair-ai/emotion', True, True),
+    DatasetInformation('dair-ai/emotion', hf_dataset=True, augment=True, with_balancing=True, is_indonesian=False),
     # DatasetInformation('../Experiments/Datasets/indo-data-review.csv', False, False, False),
     # DatasetInformation('../Experiments/Datasets/process_data.csv', False, True),
 ]

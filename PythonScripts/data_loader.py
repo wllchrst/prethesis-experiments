@@ -23,6 +23,7 @@ class DataLoaderSettings:
     with_balancing: bool = True
     with_details: bool = True
     from_cache: bool = False
+    is_indonesian: bool = False
 
 class DataLoader:
     '''
