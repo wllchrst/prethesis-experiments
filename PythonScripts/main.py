@@ -1,3 +1,8 @@
+import nltk
+
+nltk.download("wordnet")
+nltk.download("stopwords")
+nltk.download("punkt_tab")
 from constants import MODELS, DATASETS
 from data_loader import DataLoaderSettings, DataLoader
 from custom_dataset import CustomDataset, DatasetSettings
@@ -12,7 +17,7 @@ if __name__ == "__main__":
                 keys=['train', 'test', 'validation'],
                 label_col='label',
                 text_col='text',
-                labels_to_drop=[3,5],
+                labels_to_drop=[2,5], #3,5
                 from_cache=False,
                 with_augmentation=dataset_info.augment,
                 hf_dataset=dataset_info.hf_dataset,
@@ -38,4 +43,4 @@ if __name__ == "__main__":
                 pretrained_model=model
             )
 
-            train_model(dataset, training_information)
+            train_model(dataset, training_information, labels_dropped=dataset_info.labels_dropped)

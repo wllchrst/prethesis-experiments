@@ -9,10 +9,6 @@ from eda import eda
 from collections import Counter
 from indonesia_eda import indonesia_eda
 
-nltk.download("wordnet")
-nltk.download("stopwords")
-nltk.download("punkt_tab")
-
 class DataProcessor:
     '''
     Separate Class that works with data loader for processing the data (text processing, text augmentation and other important part of the data loading process)

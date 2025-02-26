@@ -41,7 +41,8 @@ def compute_metrics(eval_pred):
     }
 
 def save_training_result(results: dict[str, float], training_information: "TrainingInformation"\
-    , dataset_augmented: bool, dataset_name: str, save_path='../Experiments/February14th/', balanced=True) -> str:
+    , dataset_augmented: bool, dataset_name: str, save_path='../Experiments/February25th/', balanced=True,
+    labels_dropped=[]) -> str:
     '''
     Save results from evaluation after training using pretrained model.
     
@@ -53,9 +54,12 @@ def save_training_result(results: dict[str, float], training_information: "Train
     - bool: If the saving is successful or not.
     '''
     balance_string = "_balance" if balanced else ""
-    augmented_string = "_Augmented" if dataset_augmented else "" 
+    augmented_string = "_Augmented" if dataset_augmented else ""
+    labels_dropped_string = "dropped"
+    for label in labels_dropped:
+        labels_dropped_string += f'_{label}'
     try:
-        folder_name = f"results_{training_information.pretrained_model}_epoch{training_information.epoch}{augmented_string}_{dataset_name}{balance_string}"
+        folder_name = f"{training_information.pretrained_model}_epoch{training_information.epoch}{augmented_string}_{dataset_name}{balance_string}_{labels_dropped_string}"
         folder_name = folder_name.replace("/", "_").replace(" ", "_")
         folder_name = os.path.join(save_path, folder_name)
         os.makedirs(folder_name, exist_ok=True)
@@ -71,7 +75,7 @@ def save_training_result(results: dict[str, float], training_information: "Train
         print(f'Error saving result: {e}')
         return ""
 
-def train_model(dataset: CustomDataset, training_information: TrainingInformation):
+def train_model(dataset: CustomDataset, training_information: TrainingInformation, labels_dropped: list[str]):
     torch.cuda.empty_cache()
     model = AutoModelForSequenceClassification.from_pretrained(training_information.pretrained_model, num_labels=dataset.count_unique_labels())
     
@@ -112,15 +116,16 @@ def train_model(dataset: CustomDataset, training_information: TrainingInformatio
     evaluation_result = trainer.evaluate(dataset.test)
     folder_path = save_training_result(evaluation_result, training_information,\
         dataset_augmented=dataset.data_loader.settings.with_augmentation\
-            , dataset_name=dataset.data_loader.settings.dataset_link.replace("/", "").replace(".", ""))
+            , dataset_name=dataset.data_loader.settings.dataset_link.replace("/", "").replace(".", ""), labels_dropped=labels_dropped)
 
     predictions = trainer.predict(dataset.test)
     eval_pred = (predictions.predictions, predictions.label_ids)
     
     class_names = dataset.get_class_names()
-    generate_confusion_matrix(eval_pred, list(range(dataset.count_unique_labels())), os.path.join(folder_path, "confusion_matrix.jpeg"), class_names)
+    generate_confusion_matrix\
+        (eval_pred, list(range(dataset.count_unique_labels())), os.path.join(folder_path, "confusion_matrix.jpeg"), class_names, labels_dropped=labels_dropped)
 
-def generate_confusion_matrix(eval_pred, labels, save_path, class_names=None):
+def generate_confusion_matrix(eval_pred, labels: list[str], save_path, class_names=None, labels_dropped:list[str]=[]):
     """
     Generates and saves the confusion matrix as a .jpg file.
 
@@ -130,6 +135,7 @@ def generate_confusion_matrix(eval_pred, labels, save_path, class_names=None):
     - class_names: List of class names (optional).
     - save_path: File path to save the confusion matrix image.
     """
+    class_names = [label for label in class_names if label not in labels_dropped]
     logits, true_labels = eval_pred
     predictions = np.argmax(logits, axis=-1)
 
