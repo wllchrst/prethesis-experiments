@@ -139,11 +139,3 @@ async def indonesia_eda(sentence: str) -> list[str]:
     augmented_sentences.append(bt_english)
 
     return list(set(augmented_sentences))
-
-x = "Saya ingin bermain dengan teman di taman."
-print(x)
-
-sentences = asyncio.run(indonesia_eda(x))
-
-for sen in sentences:
-    print(sen)
