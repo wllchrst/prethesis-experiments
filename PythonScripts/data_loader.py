@@ -133,7 +133,7 @@ class DataLoader:
         
         print("Label counts:")
         for label, count in label_counts.items():
-            print(f"{self.class_names[label]}: {count}")
+            print(f"{self.class_names[label]}({label}): {count}")
 
         print("\nExamples of Text for Each Label:")
         
