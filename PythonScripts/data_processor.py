@@ -7,6 +7,7 @@ from nltk import word_tokenize
 from nltk.corpus import stopwords
 from eda import eda
 from collections import Counter
+from indonesia_eda import indonesia_eda
 
 nltk.download("wordnet")
 nltk.download("stopwords")
@@ -21,7 +22,7 @@ class DataProcessor:
         self.stop_words = stopwords.words("english")
         self.save_path = save_path
     
-    def balance_dataset(self, dataset: Dataset, dataset_name: str, with_augmentation: bool, text_col='text', label_col='label', from_cache=False):
+    def balance_dataset(self, dataset: Dataset, dataset_name: str, with_augmentation: bool, text_col='text', label_col='label', from_cache=False, is_indonesian=False):
         '''
         Balance dataset by randomly discarding data or augmenting data.
 
@@ -56,7 +57,13 @@ class DataProcessor:
                 # Augment the data to match the max count
                 while len(subset) < max_count:
                     sample = random.choice(subset)
-                    augmented_texts = eda(sample[text_col], num_aug=3)
+                    augmented_texts = []
+                    
+                    if is_indonesian:
+                        indonesia_eda(sample[text_col])
+                    else:
+                        augmented_texts = eda(sample[text_col], num_aug=3)
+
                     for aug_text in augmented_texts:
                         if len(subset) < max_count:
                             augmented_sample = sample.copy()
