@@ -123,21 +123,26 @@ class DataLoader:
             return None
 
         print("="*80)
-        print("Dataset Detail")
-        print("")
+        print("Dataset Detail\n")
 
         label_counts = Counter(self.dataset[self.settings.label_col])
+        
         print("Label counts:")
         for label, count in label_counts.items():
             print(f"{label}: {count}")
 
-        print("Examples of Text each Label")
-
+        print("\nExamples of Text for Each Label:")
+        
         for label_key in label_counts.keys():
-            examples = self.dataset.filter(lambda x: x[self.settings.label_col] == label)[self.settings.text_col][
-                       :3]  # Get first 3 examples
+            # Get indices where label matches
+            indices = [i for i, lbl in enumerate(self.dataset[self.settings.label_col]) if lbl == label_key]
+            
+            # Ensure there are enough examples to display
+            selected_examples = [self.dataset[self.settings.text_col][i] for i in indices[:3]]
+            
             print(f"\nLabel: {self.class_names[label_key]}")
-            for i, example in enumerate(examples, 1):
+            for i, example in enumerate(selected_examples, 1):
                 print(f"  {i}. {example}")
 
         print("="*80)
+
