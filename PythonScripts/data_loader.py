@@ -45,7 +45,6 @@ class DataLoader:
         self.data_processor = DataProcessor()
         self.loaded = self.load_dataset()
         self.processed = self.process_dataset(self.settings.with_augmentation)
-        self.dataset_detail()
         
     def process_dataset(self, with_augmentation=True) -> bool:
         '''
@@ -58,13 +57,16 @@ class DataLoader:
 
         self.dataset = self.data_processor.process_text\
             (dataset=self.dataset, text_col=self.settings.text_col)
-        
+            
         if self.settings.with_balancing:
             self.dataset = self.data_processor.balance_dataset\
                 (dataset=self.dataset, dataset_name=self.settings.dataset_link.replace('/', ' '), with_augmentation=with_augmentation, text_col='text')
         
         self.dataset = self.data_processor.convert_labels_to_classlabel\
-            (dataset=self.dataset, label_col=self.settings.label_col)
+            (dataset=self.dataset, label_col=self.settings.label_col, class_names=self.class_names)
+
+        self.class_names = self.dataset.features[self.settings.label_col].names
+        self.dataset_detail()
         return True
 
     def load_dataset(self) -> bool:
@@ -125,10 +127,9 @@ class DataLoader:
         """
         if not self.settings.with_details:
             return None
-
+        
         print("="*80)
         print("Dataset Detail\n")
-
         label_counts = Counter(self.dataset[self.settings.label_col])
         
         print("Label counts:")

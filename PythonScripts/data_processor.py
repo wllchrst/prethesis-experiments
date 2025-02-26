@@ -78,25 +78,29 @@ class DataProcessor:
         df_balanced.to_csv(file_name, index=False)
 
         return Dataset.from_list(balanced_data)
-
-
-    def convert_labels_to_classlabel(self, dataset: Dataset, label_col: str) -> Dataset:
+    
+    def convert_labels_to_classlabel(self, dataset: Dataset, label_col: str, class_names: list[str]) -> Dataset:
         '''
-        Convert labels from a dataset into Class Label
-        
+        Convert labels from a dataset into Class Label with correct feature mapping.
+
         Args:
         - dataset: Dataset, dataset that is going to be converted into class label
         - label_col: str, name of the column that is going to be changed
 
         Returns:
-        - dataset: Dataset, dataset that have been processed
+        - dataset: Dataset, dataset that has been processed
         '''
-        unique_labels = list(set(dataset[label_col]))
-        class_label_feature = ClassLabel\
-            (num_classes=len(unique_labels), names=[str(label) for label in unique_labels])
+        unique_labels = sorted(list(set(dataset[label_col])))
+        new_class_names = []
+        for label in unique_labels:
+            new_class_names.append(class_names[label])
 
-        dataset = dataset\
-            .map(lambda example: {label_col: class_label_feature.str2int(str(example[label_col]))})
+        label_mapping = {old_label: new_index for new_index, old_label in enumerate(unique_labels)}
+
+        dataset = dataset.map(lambda example: {label_col: label_mapping[example[label_col]]})
+
+        class_label_feature = ClassLabel(num_classes=len(new_class_names), names=new_class_names)
+
         dataset = dataset.cast_column(label_col, class_label_feature)
 
         return dataset
