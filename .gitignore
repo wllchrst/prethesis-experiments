@@ -2,5 +2,5 @@
 **/results/
 .DS_Store
 **/.obsidian/
-*.csv
+/Experiments/Datasets
 .*/
