@@ -123,15 +123,16 @@ class CustomDataset:
             
             # Tokenization function
             def tokenize_function(example):
+                texts = [str(text) for text in example[text_column]]
                 encoding = self.tokenizer(
-                    example[text_column],
+                    texts,
                     padding="max_length",
                     truncation=True,
                     max_length=self.max_length
                 )
                 encoding["labels"] = [torch.tensor(label, dtype=torch.long) for label in example[label_column]]
                 return encoding
-
+            
             self.train = self.train.map(tokenize_function, batched=True)
             self.val = self.val.map(tokenize_function, batched=True)
             self.test = self.test.map(tokenize_function, batched=True)
