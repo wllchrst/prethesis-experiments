@@ -17,7 +17,7 @@ if __name__ == "__main__":
                 keys=['train', 'test', 'validation'],
                 label_col='label',
                 text_col='text',
-                labels_to_drop=[2,5], #3,5
+                labels_to_drop=[4, 5], #3,5
                 from_cache=False,
                 with_augmentation=dataset_info.augment,
                 hf_dataset=dataset_info.hf_dataset,
