@@ -2,6 +2,7 @@
 Python Script for loading data from pandas(Need to be installed first) or even kaggle.
 '''
 import pandas as pd
+import asyncio
 from dataclasses import dataclass
 from datasets import load_dataset, concatenate_datasets
 from data_processor import DataProcessor
@@ -59,8 +60,8 @@ class DataLoader:
             (dataset=self.dataset, text_col=self.settings.text_col)
             
         if self.settings.with_balancing:
-            self.dataset = self.data_processor.balance_dataset\
-                (dataset=self.dataset, dataset_name=self.settings.dataset_link.replace('/', ' '), with_augmentation=with_augmentation, text_col='text')
+            self.dataset = asyncio.run(self.data_processor.balance_dataset\
+                (dataset=self.dataset, dataset_name=self.settings.dataset_link.replace('/', ' '), with_augmentation=with_augmentation, text_col='text', is_indonesian=self.settings.is_indonesian))
         
         self.dataset = self.data_processor.convert_labels_to_classlabel\
             (dataset=self.dataset, label_col=self.settings.label_col, class_names=self.class_names)
@@ -93,6 +94,7 @@ class DataLoader:
             except Exception as e:
                 print(f"Loading dataset went wrong: {e}")
                 return False
+
         try:
             dataset = load_dataset(self.settings.dataset_link, trust_remote_code=True)
             merged_dataset = None

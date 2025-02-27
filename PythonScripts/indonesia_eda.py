@@ -31,8 +31,12 @@ def get_only_chars(line: str) -> str:
             clean_line += ' '
 
     clean_line = re.sub(' +',' ',clean_line) #delete extra spaces
-    if clean_line[0] == ' ':
-        clean_line = clean_line[1:]
+    try:
+        if clean_line[0] == ' ':
+            clean_line = clean_line[1:]
+    except IndexError as e: 
+        print(f'{line},{e}')
+        raise e
     return clean_line
 
 def load_synonyms(file_path):
@@ -111,31 +115,38 @@ async def back_translation(sentence: str, src_lang='id', dest_lang='en') -> str:
     """
     english_version = await translator.translate(sentence, src=src_lang, dest=dest_lang)
     back_translated = await translator.translate(english_version.text, src=dest_lang, dest=src_lang)
-
     return back_translated.text
 
 async def indonesia_eda(sentence: str) -> list[str]:
-    """Fucntion to augment indonesian sentence, become 3 new sentence,
-    method that is used are Synonim Replacement and Back Translation  
+    """Augments an Indonesian sentence into three variations using Synonym Replacement and Back Translation."""
 
-    Args:
-        sentence (str): Indonesia sentence that is going to be augmentated
+    print(sentence)
+    try:
+        sentence = get_only_chars(sentence)
+        words = sentence.split(' ')
+        words = [word for word in words if word != '']
 
-    Returns:
-        list[str]: Augmented Results
-    """
-    sentence = get_only_chars(sentence)
-    words = sentence.split(' ')
-    words = [word for word in words if word != '']
+        augmented_sentences = []
 
-    augmented_sentences = []
+        a_words = synonym_replacement(words, 2)
 
-    a_words = synonym_replacement(words, 2)
-    bt_argentina = await back_translation(sentence, dest_lang="ar")
-    bt_english = await back_translation(sentence)
+        # Wrap async calls with retry mechanism
+        async def safe_translate(text, lang="en"):
+            try:
+                return await back_translation(text, dest_lang=lang)
+            except Exception as e:
+                print(f"Translation failed ({lang}): {e}")
+                return text  # Fallback to original text
 
-    augmented_sentences.append(" ".join(a_words))
-    augmented_sentences.append(bt_argentina)
-    augmented_sentences.append(bt_english)
+        bt_argentina = await safe_translate(sentence, "ar")
+        bt_english = await safe_translate(sentence)
 
-    return list(set(augmented_sentences))
+        augmented_sentences.append(" ".join(a_words))
+        augmented_sentences.append(bt_argentina)
+        augmented_sentences.append(bt_english)
+        
+        return list(set(augmented_sentences))
+
+    except Exception as e:
+        print(f'Error Indonesia EDA: {e}')
+        return []

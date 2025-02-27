@@ -1,6 +1,7 @@
 import nltk
 import random
 import os
+import asyncio
 import pandas as pd
 from datasets import ClassLabel, Dataset
 from nltk import word_tokenize 
@@ -18,7 +19,7 @@ class DataProcessor:
         self.stop_words = stopwords.words("english")
         self.save_path = save_path
     
-    def balance_dataset(self, dataset: Dataset, dataset_name: str, with_augmentation: bool, text_col='text', label_col='label', from_cache=False, is_indonesian=False):
+    async def balance_dataset(self, dataset: Dataset, dataset_name: str, with_augmentation: bool, text_col='text', label_col='label', from_cache=False, is_indonesian=False):
         '''
         Balance dataset by randomly discarding data or augmenting data.
 
@@ -53,10 +54,13 @@ class DataProcessor:
                 # Augment the data to match the max count
                 while len(subset) < max_count:
                     sample = random.choice(subset)
+                    if sample[text_col] == '':
+                        continue
+
                     augmented_texts = []
                     
                     if is_indonesian:
-                        indonesia_eda(sample[text_col])
+                        augmented_texts = await indonesia_eda(sample[text_col])
                     else:
                         augmented_texts = eda(sample[text_col], num_aug=3)
 
@@ -114,12 +118,15 @@ class DataProcessor:
         - text_col: str, name of the text column
         '''
         def process_text(sample) -> str:
-            text = sample[text_col]
-            words = self.tokenize(text)
-            words = self.remove_stopwords(words)
+            try:
+                text = sample[text_col]
+                words = self.tokenize(text)
+                words = self.remove_stopwords(words)
 
-            sample[text_col] = ' '.join(words)
-            return sample
+                sample[text_col] = ' '.join(words)
+                return sample
+            except Exception as e:
+                return sample 
 
         dataset = dataset.map(process_text)
         return dataset
