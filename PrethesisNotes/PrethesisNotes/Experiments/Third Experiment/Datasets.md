@@ -3,4 +3,7 @@ For this third experiment we are not going to use any new dataset, but there are
 Experiment that is going to be done for each dataset.
 **dair/ai-emotion**
 - Drop Label that has low data count.
+
+**Indonesia Dataset**
+- Augment the dataset using Back Translation and Synonym Replacement
 - 
