@@ -10,3 +10,13 @@ Ideas For Next Experiment:
 Results:
 - English dataset (twitter and hugging face dataset) shows really high accuracy when dropping 2 labels.
 - Indonesian dataset shows really high overfitting (even though we got better accuracy).
+
+Research on finding models that is trending, and is being use really often is stiill in theme of BERT where i find a  list of models like:
+- FinBert
+- XLM-RoBERTa
+- Distli-RoBERTa
+- and many more BERT things
+
+Interesting Models:
+- Indonesia DistilBERT https://huggingface.co/fathurfrs/indonesia-distilledbert-sentiment-classification
+- 
