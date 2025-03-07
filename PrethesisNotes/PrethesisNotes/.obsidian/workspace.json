@@ -4,17 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "b00af6d972b39970",
+        "id": "d341839bf52bc895",
         "type": "tabs",
         "children": [
           {
-            "id": "5a44f490339f5de2",
+            "id": "ce4cf39b1701d471",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Experiments/Fourth Experiment/Previous Papers.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "Previous Papers"
             }
           }
         ]
@@ -159,20 +163,23 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "5a44f490339f5de2",
+  "active": "013cdd66030b7a89",
   "lastOpenFiles": [
+    "Images/Pasted image 20250306124219.png",
+    "Images/Pasted image 20250306124125.png",
+    "Experiments/Second Experiment/Datasets.md",
+    "Experiments/Fifth",
+    "Experiments/Third Experiment/Notes For Experiment.md",
+    "Experiments/Third Experiment/Datasets.md",
     "Experiments/Fourth Experiment/Previous Papers.md",
     "Experiments/Fourth Experiment",
     "Meetings/March 5th 2025.md",
-    "Experiments/Third Experiment/Notes For Experiment.md",
     "Meetings/February 25th 2025.md",
     "Meetings/February 14th 2025.md",
     "Experiments/First Experiment/Base Models.md",
-    "Experiments/Third Experiment/Datasets.md",
     "Experiments/First Experiment/Datasets.md",
     "Experiments/Second Experiment/Data Augmentation.md",
     "Experiments/Third Experiment",
-    "Experiments/Second Experiment/Datasets.md",
     "Experiments/First Experiment/Challenges.md",
     "Images/Pasted image 20250214072443.png",
     "Experiments/Second Experiment/Untitled",
