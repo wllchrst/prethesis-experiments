@@ -1,0 +1,4 @@
+Papers:
+- **A Survey of Textual Emotion Recognition and Its Challenges**, https://sci-hub.se/https://ieeexplore.ieee.org/abstract/document/9330790, mentioned the challenges of doing Text Emotion Recognition
+- **MODELING EMOTIONS RECOGNITION ON INDONESIAN PRODUCT REVIEW BY COMBINING BERT, CNN, AND LSTM ARCHITECTURE**  https://www.researchgate.net/profile/Rhio-Sutoyo/publication/387306128_Modeling_Emotions_Recognition_on_Indonesian_Product_Review_by_Combining_BERT_CNN_and_LSTM_Architecture/links/67677c71e74ca64e1f243561/Modeling-Emotions-Recognition-on-Indonesian-Product-Review-by-Combining-BERT-CNN-and-LSTM-Architecture.pdf, paper that is made by the owner of the dataset we are using.
+- **Drivers of and barriers to e-commerce adoption in Indonesia: Individuals’ perspectives and the implications**  https://sci-hub.se/https://doi.org/10.1016/j.telpol.2021.102219, analysis of e-commerce in Indonesia for showing the importance for our research.

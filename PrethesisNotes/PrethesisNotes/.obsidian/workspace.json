@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "d341839bf52bc895",
+        "id": "e52b8f3b5cb98824",
         "type": "tabs",
         "children": [
           {
-            "id": "ce4cf39b1701d471",
+            "id": "96958e46f93b50fc",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Experiments/Fourth Experiment/Previous Papers.md",
+                "file": "Notes For Paper.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Previous Papers"
+              "title": "Notes For Paper"
             }
           }
         ]
@@ -163,30 +163,31 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "013cdd66030b7a89",
+  "active": "96958e46f93b50fc",
   "lastOpenFiles": [
+    "Experiments/Fourth Experiment/Previous Papers.md",
+    "Experiments/Fourth Experiment/Notes For Meetings.md",
+    "Meetings/February 25th 2025.md",
+    "Notes For Paper.md",
+    "Meetings/March 5th 2025.md",
     "Images/Pasted image 20250306124219.png",
     "Images/Pasted image 20250306124125.png",
-    "Experiments/Second Experiment/Datasets.md",
-    "Experiments/Fifth",
+    "Experiments/Fourth Experiment",
+    "Experiments/First Experiment/Datasets.md",
     "Experiments/Third Experiment/Notes For Experiment.md",
     "Experiments/Third Experiment/Datasets.md",
-    "Experiments/Fourth Experiment/Previous Papers.md",
-    "Experiments/Fourth Experiment",
-    "Meetings/March 5th 2025.md",
-    "Meetings/February 25th 2025.md",
-    "Meetings/February 14th 2025.md",
+    "Experiments/Second Experiment/Datasets.md",
     "Experiments/First Experiment/Base Models.md",
-    "Experiments/First Experiment/Datasets.md",
-    "Experiments/Second Experiment/Data Augmentation.md",
+    "Meetings/February 14th 2025.md",
+    "Meetings/February 6th 2025.md",
     "Experiments/Third Experiment",
+    "Experiments/Second Experiment/Data Augmentation.md",
     "Experiments/First Experiment/Challenges.md",
     "Images/Pasted image 20250214072443.png",
     "Experiments/Second Experiment/Untitled",
     "Experiments/Second Experiment",
     "To Dos.md",
     "Vault Explanation.md",
-    "Meetings/February 6th 2025.md",
     "Images",
     "Experiments/First Experiment",
     "Experiments",
