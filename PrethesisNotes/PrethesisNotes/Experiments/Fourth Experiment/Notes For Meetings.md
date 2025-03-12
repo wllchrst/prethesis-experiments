@@ -2,3 +2,4 @@
 - How to solve the overfitting issues
 - mentioned papers that have been read
 - show introduction progress for the paper and ask guides
+- apakah nyontek sitasi itu boleh?
