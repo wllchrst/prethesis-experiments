@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from training import TrainingInformation
 
 @dataclass
 class DatasetInformation:
@@ -11,10 +12,11 @@ class DatasetInformation:
     
 MODELS = [
     # "distilbert-base-uncased",
-    "roberta-base",
-    "bert-base-uncased",
+    # "roberta-base",
+    # "bert-base-uncased",
     # "xlnet-base-cased",
     # "indobenchmark/indobert-base-p1",
+    
 ]
 
 DATASETS: list[DatasetInformation] = [
@@ -22,4 +24,53 @@ DATASETS: list[DatasetInformation] = [
     DatasetInformation(link='../DataScript/indonesian_dataset_augmented_mapped.csv', labels_dropped=[], augment=False, hf_dataset=False, with_balancing=False, is_indonesian=True),
     # DatasetInformation(link='../Experiments/Datasets/indo-data-review.csv', labels_dropped=[], augment=False, hf_dataset=False, with_balancing=False, is_indonesian=True),
     # DatasetInformation(link='../Experiments/Datasets/process_data.csv', labels_dropped=[], hf_dataset=False, augment=True, with_balancing=True, is_indonesian=False),
+]
+
+TRAIN_CONFIGS = [
+    # ! BASE
+    TrainingInformation(
+        pretrained_model='',
+        dataset_name='',
+        epoch=5,
+        dropout_probability=0.1,
+        batch_size=8,
+        folder_name_from_info=True
+    ),
+    # ! WITH DROP OUT 0.3
+    TrainingInformation(
+        pretrained_model='',
+        dataset_name='',
+        epoch=5,
+        dropout_probability=0.3,
+        batch_size=8,
+        folder_name_from_info=True
+    ),
+    # ! WITH DROP OUT 0.5
+    TrainingInformation(
+        pretrained_model='',
+        dataset_name='',
+        epoch=5,
+        dropout_probability=0.5,
+        batch_size=8,
+        folder_name_from_info=True
+    ),
+    # ! BATCH SIZE CHANGE
+    TrainingInformation(
+        pretrained_model='',
+        dataset_name='',
+        epoch=5,
+        dropout_probability=0.1,
+        batch_size=16,
+        folder_name_from_info=True
+    ),
+    # ! CHANGE WEIGHT DECAY
+    TrainingInformation(
+        pretrained_model='',
+        dataset_name='',
+        epoch=5,
+        dropout_probability=0.1,
+        batch_size=8,
+        folder_name_from_info=True,
+        weight_decay=0.3
+    ),
 ]
