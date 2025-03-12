@@ -24,6 +24,7 @@ To Do Lists
 - Jelaskan apa yang sudah kita lakukan secara singkat, problem yang akan kita tackle secara spesifik.
 - Jelaskan sisa paper kita ada ngomongin apa aja
 #### C.2 Related Works
+- Bahas six basic emotions (teori emotion yang kita pake)
 - Awal emotion classification itu menggunakan apa?, dan apakah hal tersebut masih relevan untuk dilakukan sekarang?
 - Lalu transisi nya seperti apa? model yang awal-awal emotion classification pake sampe sekarang itu pasti ada transisi mereka melalui transisi apa?
 - Sekarang metode classification yang paling sering dipake itu apa? dan kenapa?
