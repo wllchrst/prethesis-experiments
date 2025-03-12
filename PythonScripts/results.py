@@ -5,7 +5,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix
 
-def generate_confusion_matrix(eval_pred, labels: list[str], save_path, class_names=None, labels_dropped:list[str]=[]):
+def generate_confusion_matrix(
+    eval_pred, 
+    labels: list[str], 
+    save_path, 
+    class_names=None, 
+    labels_dropped:list[str]=[]
+):
     """
     Generates and saves the confusion matrix as a .jpg file.
 

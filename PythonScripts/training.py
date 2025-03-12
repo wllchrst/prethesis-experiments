@@ -3,6 +3,7 @@ import os
 import gc
 import numpy as np
 import torch
+import pandas as pd
 from custom_dataset import CustomDataset
 from transformers import TrainingArguments, Trainer, AutoModelForSequenceClassification, EarlyStoppingCallback
 from dataclasses import dataclass
@@ -15,11 +16,11 @@ class TrainingInformation:
     epoch: int
     dataset_name: str
     dropout_probability: float = 0.1
-    learning_rate=2e5
-    weight_decay=0.01
-    early_stopping_patience=0
-    batch_size=8
-    folder_name_from_info=False
+    learning_rate: float=2e5
+    weight_decay: float=0.01
+    early_stopping_patience: float=0
+    batch_size: float=8
+    folder_name_from_info:bool=False
 
 accuracy_metric = evaluate.load("accuracy")
 precision_metric = evaluate.load("precision")
@@ -81,8 +82,9 @@ def train_model(
         save_strategy="epoch",
         report_to="none",
         learning_rate=training_information.learning_rate,
-        callbacks=callbacks,
-        gradient_accumulation_steps=2
+        gradient_accumulation_steps=2,
+        max_grad_norm=1,
+        callbacks=callbacks
     )
 
     trainer = Trainer(
@@ -152,7 +154,62 @@ def save_training_result(results: dict[str, float], training_information: "Train
             json.dump(results, f, indent=4)
         
         print(f"Results saved to {filename}")
+        
+        save_to_csv(results=results, save_path=save_path, training_information=training_information)
+        
         return folder_name 
     except Exception as e:
         print(f'Error saving result: {e}')
         return ""
+
+FILE_NAME = 'log.csv'
+
+def save_to_csv(
+    results: dict[str, float],
+    save_path: str,
+    training_information: TrainingInformation
+):
+    file_path = f'{save_path}{FILE_NAME}'
+
+    existing_df = None
+
+    if os.path.exists(file_path):
+        existing_df = pd.read_csv(file_path)
+
+    data = []
+    columns = []
+
+    data.append(training_information.pretrained_model)
+    columns.append('Model')
+
+    data.append(training_information.dataset_name)
+    columns.append('Dataset')
+
+    data.append(training_information.epoch)
+    columns.append('Epoch')
+
+    data.append(training_information.batch_size)
+    columns.append('Batch Size')
+
+    data.append(training_information.dropout_probability)
+    columns.append('Dropout')
+    
+    data.append(training_information.early_stopping_patience)
+    columns.append('Early Stopping')
+
+    data.append(training_information.learning_rate)
+    columns.append('Learning Rate')
+
+    data.append(training_information.weight_decay)
+    columns.append('Weight Decay')
+
+    # Append result
+    for key in results:
+        columns.append(key)
+        data.append(columns[key])
+
+    df = pd.DataFrame(data=data, columns=columns)
+    
+    existing_df = df if existing_df is None else pd.concat(existing_df, df)
+
+    existing_df.to_csv(file_path)
