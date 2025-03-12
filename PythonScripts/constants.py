@@ -15,7 +15,7 @@ MODELS = [
     # "roberta-base",
     # "bert-base-uncased",
     # "xlnet-base-cased",
-    # "indobenchmark/indobert-base-p1",
+    "indobenchmark/indobert-base-p1",
     
 ]
 
@@ -26,51 +26,68 @@ DATASETS: list[DatasetInformation] = [
     # DatasetInformation(link='../Experiments/Datasets/process_data.csv', labels_dropped=[], hf_dataset=False, augment=True, with_balancing=True, is_indonesian=False),
 ]
 
+TEST_CONFIG = TrainingInformation(
+    pretrained_model='',
+    dataset_name='IndonesiaDataset',
+    epoch=1,
+    dropout_probability=0.1,
+    batch_size=8,
+    folder_name_from_info=True    
+)
+
 TRAIN_CONFIGS = [
-    # ! BASE
+    # # ! BASE
+    # TrainingInformation(
+    #     pretrained_model='',
+    #     dataset_name='IndonesiaDataset',
+    #     epoch=5,
+    #     dropout_probability=0.1,
+    #     batch_size=8,
+    #     folder_name_from_info=True
+    # ),
+    # # ! WITH DROP OUT 0.3
+    # TrainingInformation(
+    #     pretrained_model='',
+    #     dataset_name='IndonesiaDataset',
+    #     epoch=5,
+    #     dropout_probability=0.3,
+    #     batch_size=8,
+    #     folder_name_from_info=True
+    # ),
+    # # ! WITH DROP OUT 0.5
+    # TrainingInformation(
+    #     pretrained_model='',
+    #     dataset_name='IndonesiaDataset',
+    #     epoch=5,
+    #     dropout_probability=0.5,
+    #     batch_size=8,
+    #     folder_name_from_info=True
+    # ),
+    # # ! BATCH SIZE CHANGE
+    # TrainingInformation(
+    #     pretrained_model='',
+    #     dataset_name='IndonesiaDataset',
+    #     epoch=5,
+    #     dropout_probability=0.1,
+    #     batch_size=16,
+    #     folder_name_from_info=True
+    # ),
+    # # ! CHANGE WEIGHT DECAY
+    # TrainingInformation(
+    #     pretrained_model='',
+    #     dataset_name='IndonesiaDataset',
+    #     epoch=5,
+    #     dropout_probability=0.1,
+    #     batch_size=8,
+    #     folder_name_from_info=True,
+    #     weight_decay=0.3
+    # ),
     TrainingInformation(
         pretrained_model='',
-        dataset_name='',
-        epoch=5,
-        dropout_probability=0.1,
-        batch_size=8,
-        folder_name_from_info=True
-    ),
-    # ! WITH DROP OUT 0.3
-    TrainingInformation(
-        pretrained_model='',
-        dataset_name='',
+        dataset_name='IndonesiaDataset',
         epoch=5,
         dropout_probability=0.3,
-        batch_size=8,
-        folder_name_from_info=True
-    ),
-    # ! WITH DROP OUT 0.5
-    TrainingInformation(
-        pretrained_model='',
-        dataset_name='',
-        epoch=5,
-        dropout_probability=0.5,
-        batch_size=8,
-        folder_name_from_info=True
-    ),
-    # ! BATCH SIZE CHANGE
-    TrainingInformation(
-        pretrained_model='',
-        dataset_name='',
-        epoch=5,
-        dropout_probability=0.1,
-        batch_size=16,
-        folder_name_from_info=True
-    ),
-    # ! CHANGE WEIGHT DECAY
-    TrainingInformation(
-        pretrained_model='',
-        dataset_name='',
-        epoch=5,
-        dropout_probability=0.1,
-        batch_size=8,
+        batch_size=32,
         folder_name_from_info=True,
-        weight_decay=0.3
     ),
 ]

@@ -7,7 +7,7 @@ import pandas as pd
 from custom_dataset import CustomDataset
 from transformers import TrainingArguments, Trainer, AutoModelForSequenceClassification, EarlyStoppingCallback
 from dataclasses import dataclass
-from results import generate_confusion_matrix
+from results import generate_confusion_matrix, plot_training_history
 import json
 
 @dataclass
@@ -16,7 +16,7 @@ class TrainingInformation:
     epoch: int
     dataset_name: str
     dropout_probability: float = 0.1
-    learning_rate: float=2e5
+    learning_rate: float=2e-5
     weight_decay: float=0.01
     early_stopping_patience: float=0
     batch_size: float=8
@@ -83,20 +83,18 @@ def train_model(
         report_to="none",
         learning_rate=training_information.learning_rate,
         gradient_accumulation_steps=2,
-        max_grad_norm=1,
-        callbacks=callbacks
+        max_grad_norm=1
     )
 
     trainer = Trainer(
         model=model,
         args=training_args,
         train_dataset=dataset.train,
-        eval_dataset=dataset.test,
-        compute_metrics=compute_metrics
+        eval_dataset=dataset.val,
+        compute_metrics=compute_metrics,
+        callbacks=callbacks
     )
     
-    print(gc.collect())
-
     trainer.train()
 
     evaluation_result = trainer.evaluate(dataset.test)
@@ -120,10 +118,12 @@ def train_model(
     class_names = dataset.get_class_names()
     generate_confusion_matrix\
         (eval_pred, list(range(dataset.count_unique_labels())), os.path.join(folder_path, "confusion_matrix.jpeg"), class_names, labels_dropped=labels_dropped)
+    
+    plot_training_history(trainer, os.path.join(folder_path, "overfitting_analysis"))
         
         
 def save_training_result(results: dict[str, float], training_information: "TrainingInformation"\
-    , dataset_augmented: bool, dataset_name: str, save_path='../Experiments/February25th/', balanced=True,
+    , dataset_augmented: bool, dataset_name: str, save_path='../Experiments/March11th/', balanced=True,
     labels_dropped=[], folder_path='') -> str:
     '''
     Save results from evaluation after training using pretrained model.
@@ -145,7 +145,9 @@ def save_training_result(results: dict[str, float], training_information: "Train
         folder_name = folder_name.replace("/", "_").replace(" ", "_")
         folder_name = os.path.join(save_path, folder_name)
         
-        folder_name = folder_name if folder_path == '' else folder_path
+        folder_name = folder_name if folder_path == '' else f'{save_path}{folder_path}'
+        folder_name = folder_name.replace(' ', '')
+        print(f'folder name: {folder_name}')
         os.makedirs(folder_name, exist_ok=True)
      
         filename = os.path.join(folder_name, "results.json")
@@ -169,47 +171,55 @@ def save_to_csv(
     save_path: str,
     training_information: TrainingInformation
 ):
-    file_path = f'{save_path}{FILE_NAME}'
+    try:
+        file_path = f'{save_path}{FILE_NAME}'
 
-    existing_df = None
+        existing_df = None
 
-    if os.path.exists(file_path):
-        existing_df = pd.read_csv(file_path)
+        if os.path.exists(file_path):
+            existing_df = pd.read_csv(file_path)
 
-    data = []
-    columns = []
+        data = []
+        columns = []
 
-    data.append(training_information.pretrained_model)
-    columns.append('Model')
+        data.append(training_information.pretrained_model)
+        columns.append('Model')
 
-    data.append(training_information.dataset_name)
-    columns.append('Dataset')
+        data.append(training_information.dataset_name)
+        columns.append('Dataset')
 
-    data.append(training_information.epoch)
-    columns.append('Epoch')
+        data.append(training_information.epoch)
+        columns.append('Epoch')
 
-    data.append(training_information.batch_size)
-    columns.append('Batch Size')
+        data.append(training_information.batch_size)
+        columns.append('Batch Size')
 
-    data.append(training_information.dropout_probability)
-    columns.append('Dropout')
-    
-    data.append(training_information.early_stopping_patience)
-    columns.append('Early Stopping')
+        data.append(training_information.dropout_probability)
+        columns.append('Dropout')
+        
+        data.append(training_information.early_stopping_patience)
+        columns.append('Early Stopping')
 
-    data.append(training_information.learning_rate)
-    columns.append('Learning Rate')
+        data.append(training_information.learning_rate)
+        columns.append('Learning Rate')
 
-    data.append(training_information.weight_decay)
-    columns.append('Weight Decay')
+        data.append(training_information.weight_decay)
+        columns.append('Weight Decay')
 
-    # Append result
-    for key in results:
-        columns.append(key)
-        data.append(columns[key])
+        # Append result
+        for key in results:
+            columns.append(key)
+            data.append(results[key])
 
-    df = pd.DataFrame(data=data, columns=columns)
-    
-    existing_df = df if existing_df is None else pd.concat(existing_df, df)
+        df = pd.DataFrame([data], columns=columns)
 
-    existing_df.to_csv(file_path)
+        # Jika ada data lama, gabungkan
+        if existing_df is not None:
+            existing_df = pd.concat([existing_df, df], ignore_index=True)
+        else:
+            existing_df = df
+            
+        existing_df.to_csv(file_path)
+
+    except Exception as e:
+        print(f"ERROR SAVING TO CSV {e}")

@@ -1,15 +1,16 @@
 import nltk
+from constants import MODELS, DATASETS, TRAIN_CONFIGS, TEST_CONFIG
+from data_loader import DataLoaderSettings, DataLoader
+from custom_dataset import CustomDataset, DatasetSettings
+from training import train_model
 
 nltk.download("wordnet")
 nltk.download("stopwords")
 nltk.download("punkt_tab")
-from constants import MODELS, DATASETS, TRAIN_CONFIGS
-from data_loader import DataLoaderSettings, DataLoader
-from custom_dataset import CustomDataset, DatasetSettings
-from training import train_model, TrainingInformation
 
 if __name__ == "__main__":
-
+    testing = False
+    
     for dataset_info in DATASETS:
 
         loader_settings = DataLoaderSettings(
@@ -37,8 +38,12 @@ if __name__ == "__main__":
 
             dataset = CustomDataset(dataset_settings, data_loader)
             
-            for config in TRAIN_CONFIGS:
-                config.dataset_name = dataset_info.link,
-                config.pretrained_model = model
+            if testing:
+                TEST_CONFIG.pretrained_model = model
+                train_model(dataset, TEST_CONFIG, labels_dropped=dataset_info.labels_dropped)
+                break
+            else:
+                for config in TRAIN_CONFIGS:
+                    config.pretrained_model = model
 
-                train_model(dataset, config, labels_dropped=dataset_info.labels_dropped)
+                    train_model(dataset, config, labels_dropped=dataset_info.labels_dropped)
