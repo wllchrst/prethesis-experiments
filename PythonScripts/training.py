@@ -1,23 +1,25 @@
 import evaluate
 import os
 import gc
-import json
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 import torch
-from collections import Counter
 from custom_dataset import CustomDataset
-from transformers import TrainingArguments, Trainer, AutoModelForSequenceClassification
+from transformers import TrainingArguments, Trainer, AutoModelForSequenceClassification, EarlyStoppingCallback
 from dataclasses import dataclass
-from datasets import Dataset
-from sklearn.metrics import confusion_matrix
+from results import generate_confusion_matrix
+import json
 
 @dataclass
 class TrainingInformation:
     pretrained_model: str
     epoch: int
     dataset_name: str
+    dropout_probability: float = 0.1
+    learning_rate=2e5
+    weight_decay=0.01
+    early_stopping_patience=0
+    batch_size=8
+    folder_name_from_info=False
 
 accuracy_metric = evaluate.load("accuracy")
 precision_metric = evaluate.load("precision")
@@ -40,9 +42,87 @@ def compute_metrics(eval_pred):
         "f1": f1["f1"]
     }
 
+def train_model(
+    dataset: CustomDataset, 
+    training_information: TrainingInformation, 
+    labels_dropped: list[str],
+) -> None :
+    torch.cuda.empty_cache()
+    model = AutoModelForSequenceClassification.from_pretrained(
+        training_information.pretrained_model, num_labels=dataset.count_unique_labels()
+    )
+    
+    model.config.hidden_dropout_prob = training_information.dropout_probability
+    model.config.attention_probs_dropout_prob = training_information.dropout_probability
+        
+    if torch.cuda.is_available():
+        print(f"Training model is using GPU {torch.cuda.get_device_name(0)}")
+        device = torch.device("cuda")
+        model.to(device)
+    else:
+        print(f'Training model is using CPU')
+    
+    callbacks = []
+    if training_information.early_stopping_patience > 0:
+        early_stopping = EarlyStoppingCallback(early_stopping_patience=training_information.early_stopping_patience)
+        callbacks.append(early_stopping)
+
+    training_args = TrainingArguments(
+        output_dir="./results",
+        num_train_epochs=training_information.epoch,
+        per_device_train_batch_size=training_information.batch_size,
+        per_device_eval_batch_size=training_information.batch_size,
+        warmup_steps=500,
+        weight_decay=training_information.weight_decay,
+        logging_dir="./logs",
+        logging_steps=10,
+        eval_strategy="epoch",
+        logging_strategy="epoch",
+        save_strategy="epoch",
+        report_to="none",
+        learning_rate=training_information.learning_rate,
+        callbacks=callbacks,
+        gradient_accumulation_steps=2
+    )
+
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=dataset.train,
+        eval_dataset=dataset.test,
+        compute_metrics=compute_metrics
+    )
+    
+    print(gc.collect())
+
+    trainer.train()
+
+    evaluation_result = trainer.evaluate(dataset.test)
+    suggested_path = ''    
+    if training_information.folder_name_from_info:
+        suggested_path = f"{training_information.dataset_name}\
+            _model-{training_information.pretrained_model.replace('/', '-')}\
+                _epochs-{training_information.epoch}_dropout-{training_information.dropout_probability}\
+                    _lr-{training_information.learning_rate}_wd-{training_information.weight_decay}\
+                        _es-{training_information.early_stopping_patience}_bs-{training_information.batch_size}"
+                        
+
+    folder_path = save_training_result(evaluation_result, training_information,\
+        dataset_augmented=dataset.data_loader.settings.with_augmentation\
+            , dataset_name=dataset.data_loader.settings.dataset_link.replace("/", "").replace(".", ""), labels_dropped=labels_dropped\
+                ,folder_path=suggested_path)
+
+    predictions = trainer.predict(dataset.test)
+    eval_pred = (predictions.predictions, predictions.label_ids)
+    
+    class_names = dataset.get_class_names()
+    generate_confusion_matrix\
+        (eval_pred, list(range(dataset.count_unique_labels())), os.path.join(folder_path, "confusion_matrix.jpeg"), class_names, labels_dropped=labels_dropped)
+        
+        
 def save_training_result(results: dict[str, float], training_information: "TrainingInformation"\
     , dataset_augmented: bool, dataset_name: str, save_path='../Experiments/February25th/', balanced=True,
-    labels_dropped=[]) -> str:
+    labels_dropped=[], folder_path='') -> str:
     '''
     Save results from evaluation after training using pretrained model.
     
@@ -62,6 +142,8 @@ def save_training_result(results: dict[str, float], training_information: "Train
         folder_name = f"{training_information.pretrained_model}_epoch{training_information.epoch}{augmented_string}_{dataset_name}{balance_string}_{labels_dropped_string}"
         folder_name = folder_name.replace("/", "_").replace(" ", "_")
         folder_name = os.path.join(save_path, folder_name)
+        
+        folder_name = folder_name if folder_path == '' else folder_path
         os.makedirs(folder_name, exist_ok=True)
      
         filename = os.path.join(folder_name, "results.json")
@@ -74,79 +156,3 @@ def save_training_result(results: dict[str, float], training_information: "Train
     except Exception as e:
         print(f'Error saving result: {e}')
         return ""
-
-def train_model(dataset: CustomDataset, training_information: TrainingInformation, labels_dropped: list[str]):
-    torch.cuda.empty_cache()
-    model = AutoModelForSequenceClassification.from_pretrained(training_information.pretrained_model, num_labels=dataset.count_unique_labels())
-    
-    if torch.cuda.is_available():
-        print(f"Training model is using GPU {torch.cuda.get_device_name(0)}")
-        device = torch.device("cuda")
-        model.to(device)
-    else:
-        print(f'Training model is using CPU')
-
-    training_args = TrainingArguments(
-        output_dir="./results",
-        num_train_epochs=training_information.epoch,
-        per_device_train_batch_size=8,
-        per_device_eval_batch_size=8,
-        warmup_steps=500,
-        weight_decay=0.01,
-        logging_dir="./logs",
-        logging_steps=10,
-        eval_strategy="epoch",
-        logging_strategy="epoch",
-        save_strategy="epoch",
-        report_to="none"
-    )
-
-    trainer = Trainer(
-        model=model,
-        args=training_args,
-        train_dataset=dataset.train,
-        eval_dataset=dataset.test,
-        compute_metrics=compute_metrics
-    )
-    
-    print(gc.collect())
-
-    trainer.train()
-
-    evaluation_result = trainer.evaluate(dataset.test)
-    folder_path = save_training_result(evaluation_result, training_information,\
-        dataset_augmented=dataset.data_loader.settings.with_augmentation\
-            , dataset_name=dataset.data_loader.settings.dataset_link.replace("/", "").replace(".", ""), labels_dropped=labels_dropped)
-
-    predictions = trainer.predict(dataset.test)
-    eval_pred = (predictions.predictions, predictions.label_ids)
-    
-    class_names = dataset.get_class_names()
-    generate_confusion_matrix\
-        (eval_pred, list(range(dataset.count_unique_labels())), os.path.join(folder_path, "confusion_matrix.jpeg"), class_names, labels_dropped=labels_dropped)
-
-def generate_confusion_matrix(eval_pred, labels: list[str], save_path, class_names=None, labels_dropped:list[str]=[]):
-    """
-    Generates and saves the confusion matrix as a .jpg file.
-
-    Args:
-    - eval_pred: Tuple containing (logits, labels).
-    - labels: List of unique labels.
-    - class_names: List of class names (optional).
-    - save_path: File path to save the confusion matrix image.
-    """
-    class_names = [label for label in class_names if label not in labels_dropped]
-    logits, true_labels = eval_pred
-    predictions = np.argmax(logits, axis=-1)
-
-    cm = confusion_matrix(true_labels, predictions, labels=labels)
-
-    plt.figure(figsize=(8, 6))
-    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=class_names, yticklabels=class_names)
-    plt.xlabel("Predicted")
-    plt.ylabel("Actual")
-    plt.title("Confusion Matrix")
-
-    plt.savefig(save_path, format="jpg", dpi=300)
-    plt.close()
-    print(f"Confusion matrix saved to {save_path}")
