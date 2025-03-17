@@ -3,8 +3,9 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pandas as pd
+import re
 from sklearn.metrics import confusion_matrix
-from transformers import Trainer
 
 def generate_confusion_matrix(
     eval_pred, 
@@ -97,3 +98,51 @@ def plot_training_history(trainer, save_path):
 
     plt.savefig(save_path)
     plt.close()
+
+def extract_hyperparams_from_foldername(foldername: str):
+    """Extract hyperparameter details from folder name."""
+    informations = foldername.split('_')
+    
+    epochs = int(informations[2].split('-')[1])
+    dropout = float(informations[3].split('-')[1])
+    learning_rate = float(informations[4].split('-')[1]
+                          + informations[4].split('-')[2])
+    weight_decay = float(informations[5].split('-')[1])
+    early_stopping = int(informations[6].split('-')[1])
+    batch_size = int(informations[7].split('-')[1])
+    
+    return {
+        "dataset": informations[0],
+        "model": informations[1],
+        "epochs": epochs,
+        "dropout": dropout,
+        "learning_rate": learning_rate,
+        "weight_decay": weight_decay,
+        "early_stopping": early_stopping,
+        "batch_size": batch_size}
+
+def gather_results_to_csv(base_path='../Experiments/March11th', output_csv="results_summary.csv"):
+    """Gather all results.json files and save them to a CSV."""
+    all_results = []
+    
+    for folder in os.listdir(base_path):
+        folder_path = os.path.join(base_path, folder)
+        if os.path.isdir(folder_path):
+            result_file = os.path.join(folder_path, "results.json")
+            if os.path.exists(result_file):
+                with open(result_file, "r") as f:
+                    results = json.load(f)
+                
+                hyperparams = extract_hyperparams_from_foldername(folder)
+                combined_data = {**hyperparams, **results}
+                all_results.append(combined_data)
+    
+    if all_results:
+        df = pd.DataFrame(all_results)
+        df.to_csv(output_csv, index=False)
+        print(f"Results saved to {output_csv}")
+    else:
+        print("No results found.")
+
+if __name__ == '__main__':
+    gather_results_to_csv()
