@@ -3,6 +3,7 @@ from PythonScripts.constants import MODELS, DATASETS, TRAIN_CONFIGS, TEST_CONFIG
 from PythonScripts.dataset.data_loader import DataLoaderSettings, DataLoader
 from PythonScripts.dataset.custom_dataset import CustomDataset, DatasetSettings
 from PythonScripts.training.training import train_model
+from PythonScripts.ensemble.bagging import Bagging
 
 nltk.download("wordnet")
 nltk.download("stopwords")
@@ -12,7 +13,6 @@ if __name__ == "__main__":
     testing = False
     
     for dataset_info in DATASETS:
-
         loader_settings = DataLoaderSettings(
                 dataset_link=dataset_info.link,
                 keys=['train', 'test', 'validation'],
@@ -37,6 +37,10 @@ if __name__ == "__main__":
             )
 
             dataset = CustomDataset(dataset_settings, data_loader)
+            
+            bagging = Bagging("indobenchmark/indobert-base-p1", 3, dataset, TRAIN_CONFIGS[0])
+            bagging.train()
+            break
             
             if testing:
                 TEST_CONFIG.pretrained_model = model
