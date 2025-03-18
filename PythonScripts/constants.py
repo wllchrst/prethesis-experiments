@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from training import TrainingInformation
+from training.training import TrainingInformation
 
 @dataclass
 class DatasetInformation:

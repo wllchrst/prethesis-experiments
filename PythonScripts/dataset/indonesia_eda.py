@@ -1,6 +1,5 @@
 import random
 import re
-import asyncio
 from googletrans import Translator
 
 

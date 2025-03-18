@@ -1,7 +1,5 @@
-import nltk
 import random
 import os
-import asyncio
 import pandas as pd
 from datasets import ClassLabel, Dataset
 from nltk import word_tokenize 

@@ -1,7 +1,7 @@
 import nltk
 from constants import MODELS, DATASETS, TRAIN_CONFIGS, TEST_CONFIG
-from data_loader import DataLoaderSettings, DataLoader
-from custom_dataset import CustomDataset, DatasetSettings
+from dataset.data_loader import DataLoaderSettings, DataLoader
+from dataset.custom_dataset import CustomDataset, DatasetSettings
 from training import train_model
 
 nltk.download("wordnet")

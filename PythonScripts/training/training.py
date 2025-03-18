@@ -4,7 +4,7 @@ import gc
 import numpy as np
 import torch
 import pandas as pd
-from custom_dataset import CustomDataset
+from ..dataset.custom_dataset import CustomDataset
 from transformers import TrainingArguments, Trainer, AutoModelForSequenceClassification, EarlyStoppingCallback
 from dataclasses import dataclass
 from results import generate_confusion_matrix, plot_training_history
