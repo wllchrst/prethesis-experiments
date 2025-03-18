@@ -4,9 +4,9 @@ import pandas as pd
 from datasets import ClassLabel, Dataset
 from nltk import word_tokenize 
 from nltk.corpus import stopwords
-from eda import eda
+from PythonScripts.dataset.eda import eda
 from collections import Counter
-from indonesia_eda import indonesia_eda
+from PythonScripts.dataset.indonesia_eda import indonesia_eda
 
 class DataProcessor:
     '''

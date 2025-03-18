@@ -3,7 +3,7 @@ from torch.utils.data import DataLoader
 from transformers import AutoTokenizer
 import torch
 from dataclasses import dataclass
-from data_loader import DataLoader
+from PythonScripts.dataset.data_loader import DataLoader
 
 @dataclass
 class DatasetSettings:

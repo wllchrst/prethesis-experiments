@@ -1,8 +1,8 @@
 import nltk
-from constants import MODELS, DATASETS, TRAIN_CONFIGS, TEST_CONFIG
-from dataset.data_loader import DataLoaderSettings, DataLoader
-from dataset.custom_dataset import CustomDataset, DatasetSettings
-from training import train_model
+from PythonScripts.constants import MODELS, DATASETS, TRAIN_CONFIGS, TEST_CONFIG
+from PythonScripts.dataset.data_loader import DataLoaderSettings, DataLoader
+from PythonScripts.dataset.custom_dataset import CustomDataset, DatasetSettings
+from PythonScripts.training.training import train_model
 
 nltk.download("wordnet")
 nltk.download("stopwords")

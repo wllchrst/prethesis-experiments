@@ -5,7 +5,7 @@ import pandas as pd
 import asyncio
 from dataclasses import dataclass
 from datasets import load_dataset, concatenate_datasets
-from data_processor import DataProcessor
+from PythonScripts.dataset.data_processor import DataProcessor
 from datasets import Dataset, ClassLabel
 from collections import Counter
 

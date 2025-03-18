@@ -4,10 +4,10 @@ import gc
 import numpy as np
 import torch
 import pandas as pd
-from ..dataset.custom_dataset import CustomDataset
+from PythonScripts.dataset.custom_dataset import CustomDataset
 from transformers import TrainingArguments, Trainer, AutoModelForSequenceClassification, EarlyStoppingCallback
 from dataclasses import dataclass
-from results import generate_confusion_matrix, plot_training_history
+from PythonScripts.training.results import generate_confusion_matrix, plot_training_history
 import json
 
 @dataclass
