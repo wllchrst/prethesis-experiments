@@ -1,5 +1,5 @@
 import nltk
-from PythonScripts.constants import MODELS, DATASETS, TRAIN_CONFIGS, TEST_CONFIG
+from PythonScripts.constants import MODELS, DATASETS, TRAIN_CONFIGS, TEST_CONFIG, ENSEMBLE_CONFIG
 from PythonScripts.dataset.data_loader import DataLoaderSettings, DataLoader
 from PythonScripts.dataset.custom_dataset import CustomDataset, DatasetSettings
 from PythonScripts.training.training import train_model
@@ -9,9 +9,10 @@ nltk.download("wordnet")
 nltk.download("stopwords")
 nltk.download("punkt_tab")
 
+TESTING = False
+ENSEMBLE = True
+
 if __name__ == "__main__":
-    testing = False
-    
     for dataset_info in DATASETS:
         loader_settings = DataLoaderSettings(
                 dataset_link=dataset_info.link,
@@ -37,12 +38,20 @@ if __name__ == "__main__":
             )
 
             dataset = CustomDataset(dataset_settings, data_loader)
+
+            if ENSEMBLE:
+                bagging = Bagging(
+                    model_paths=ENSEMBLE_CONFIG.model_paths,
+                    dataset=dataset,
+                    num_model=ENSEMBLE_CONFIG.num_model,
+                    training_information=ENSEMBLE_CONFIG.training_information
+                )
+
+                bagging.train()
+                bagging.predict()
+                
             
-            bagging = Bagging("indobenchmark/indobert-base-p1", 3, dataset, TRAIN_CONFIGS[0])
-            bagging.train()
-            break
-            
-            if testing:
+            if TESTING:
                 TEST_CONFIG.pretrained_model = model
                 train_model(dataset, TEST_CONFIG, labels_dropped=dataset_info.labels_dropped)
                 break
