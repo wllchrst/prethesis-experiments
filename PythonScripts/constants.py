@@ -9,6 +9,12 @@ class DatasetInformation:
     augment: bool = True
     with_balancing: bool = True
     is_indonesian: bool = False
+
+@dataclass
+class BaggingConfig:
+    model_paths: list[str]
+    num_model: int
+    training_information: TrainingInformation
     
 MODELS = [
     # "distilbert-base-uncased",
@@ -91,3 +97,9 @@ TRAIN_CONFIGS = [
         folder_name_from_info=True,
     ),
 ]
+
+ENSEMBLE_CONFIG = BaggingConfig(
+    model_paths=['indobenchmark/indobert-base-p1', 'AptaArkana/indonesian-distilbert-base-cased-finetuned-indonlu'],
+    num_model=2,
+    training_information=TRAIN_CONFIGS[0]
+)
