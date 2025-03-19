@@ -155,71 +155,7 @@ def save_training_result(results: dict[str, float], training_information: "Train
         with open(filename, "w") as f:
             json.dump(results, f, indent=4)
         
-        print(f"Results saved to {filename}")
-        
-        save_to_csv(results=results, save_path=save_path, training_information=training_information)
-        
         return folder_name 
     except Exception as e:
         print(f'Error saving result: {e}')
         return ""
-
-FILE_NAME = 'log.csv'
-
-def save_to_csv(
-    results: dict[str, float],
-    save_path: str,
-    training_information: TrainingInformation
-):
-    try:
-        file_path = f'{save_path}{FILE_NAME}'
-
-        existing_df = None
-
-        if os.path.exists(file_path):
-            existing_df = pd.read_csv(file_path)
-
-        data = []
-        columns = []
-
-        data.append(training_information.pretrained_model)
-        columns.append('Model')
-
-        data.append(training_information.dataset_name)
-        columns.append('Dataset')
-
-        data.append(training_information.epoch)
-        columns.append('Epoch')
-
-        data.append(training_information.batch_size)
-        columns.append('Batch Size')
-
-        data.append(training_information.dropout_probability)
-        columns.append('Dropout')
-        
-        data.append(training_information.early_stopping_patience)
-        columns.append('Early Stopping')
-
-        data.append(training_information.learning_rate)
-        columns.append('Learning Rate')
-
-        data.append(training_information.weight_decay)
-        columns.append('Weight Decay')
-
-        # Append result
-        for key in results:
-            columns.append(key)
-            data.append(results[key])
-
-        df = pd.DataFrame([data], columns=columns)
-
-        # Jika ada data lama, gabungkan
-        if existing_df is not None:
-            existing_df = pd.concat([existing_df, df], ignore_index=True)
-        else:
-            existing_df = df
-            
-        existing_df.to_csv(file_path)
-
-    except Exception as e:
-        print(f"ERROR SAVING TO CSV {e}")
