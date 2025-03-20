@@ -1,7 +1,10 @@
+import nltk
+import nltk.corpus
 import random
 import re
+import pandas as pd
+from nltk import word_tokenize
 from googletrans import Translator
-
 
 #cleaning up text
 def get_only_chars(line: str) -> str:
@@ -66,8 +69,8 @@ def get_synonyms(word: str) -> list[str]:
         return synonyms_dict[word]
     return []
 
-stop_words = load_stopwords("ImportantFiles/id.stopwords.02.01.2016.txt")
-synonyms_dict = load_synonyms("ImportantFiles/Tesaurus-BahasaIndonesia.txt")
+stop_words = load_stopwords("../../ImportantFiles/id.stopwords.02.01.2016.txt")
+synonyms_dict = load_synonyms("../../ImportantFiles/Tesaurus-BahasaIndonesia.txt")
 translator = Translator()
 
 def synonym_replacement(words: str, n: int) -> list[str]:
@@ -149,3 +152,39 @@ async def indonesia_eda(sentence: str) -> list[str]:
     except Exception as e:
         print(f'Error Indonesia EDA: {e}')
         return []
+    
+def remove_indonesian_stopwords(words: list[str]) -> list[str]:
+    """Removes Indonesian stopwords from a list of words."""
+    return [word for word in words if word.lower() not in stop_words]
+
+def keep_alphabet(words: list[str]) -> list[str]:
+    """Keeps only words containing alphabetic characters."""
+    return [word for word in words if word.isalpha()]
+
+def split_words(sentence: str) -> list[str]:
+    """Tokenizes a sentence into words."""
+    return word_tokenize(sentence)
+
+def clean_dataset(path: str) -> bool:
+    """Reads a dataset, tokenizes, removes stopwords and non-alphabetic words."""
+    try:
+        df = pd.read_csv(path)
+        
+        if "text" not in df.columns:
+            print("Error: Column 'text' not found in dataset")
+            return False
+        
+        df["text"] = df["text"].apply(lambda x: " ".join(
+            remove_indonesian_stopwords(keep_alphabet(split_words(str(x).lower())))
+        ))
+        
+        prefix = path[:-4]
+        df.to_csv(f'{prefix}_cleaned.csv', index=False)
+        return True
+    except Exception as e:
+        print(f"Error processing dataset: {e}")
+        return False
+    
+if __name__ == "__main__":
+    success = clean_dataset('../../DataScript/indonesian_dataset_augmented_mapped.csv')
+    print(f'Success cleaning dataset: {success}')
