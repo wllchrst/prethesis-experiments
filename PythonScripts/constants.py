@@ -15,6 +15,7 @@ class BaggingConfig:
     model_paths: list[str]
     num_model: int
     training_information: TrainingInformation
+    tokenizer: str
     
 MODELS = [
     # "distilbert-base-uncased",
@@ -46,10 +47,11 @@ TRAIN_CONFIGS = [
     TrainingInformation(
        pretrained_model='',
        dataset_name='IndonesiaDataset',
-       epoch=3,
-       dropout_probability=0.1,
-       batch_size=8,
-       folder_name_from_info=True
+       epoch=6,
+       dropout_probability=0.4,
+       batch_size=16,
+       folder_name_from_info=True,
+       weight_decay=0.3
     ),
     # ! WITH DROP OUT 0.3
     TrainingInformation(
@@ -99,7 +101,8 @@ TRAIN_CONFIGS = [
 ]
 
 ENSEMBLE_CONFIG = BaggingConfig(
-    model_paths=['indobenchmark/indobert-base-p1', 'AptaArkana/indonesian-distilbert-base-cased-finetuned-indonlu'],
+    model_paths=['indobenchmark/indobert-base-p1', 'indobenchmark/indobert-base-p1'],
     num_model=2,
-    training_information=TRAIN_CONFIGS[0]
+    training_information=TRAIN_CONFIGS[0],
+    tokenizer='indobenchmark/indobert-base-p1'
 )

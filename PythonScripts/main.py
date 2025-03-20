@@ -30,33 +30,40 @@ if __name__ == "__main__":
 
         data_loader = DataLoader(loader_settings)
 
-        for model in MODELS:
+        if ENSEMBLE:
             dataset_settings = DatasetSettings(
                 label_col='label',
                 text_col='text',
-                tokenizer_link=model
+                tokenizer_link=ENSEMBLE_CONFIG.tokenizer
             )
 
             dataset = CustomDataset(dataset_settings, data_loader)
+            
+            bagging = Bagging(
+                model_paths=ENSEMBLE_CONFIG.model_paths,
+                dataset=dataset,
+                num_model=ENSEMBLE_CONFIG.num_model,
+                training_information=ENSEMBLE_CONFIG.training_information
+            )
 
-            if ENSEMBLE:
-                bagging = Bagging(
-                    model_paths=ENSEMBLE_CONFIG.model_paths,
-                    dataset=dataset,
-                    num_model=ENSEMBLE_CONFIG.num_model,
-                    training_information=ENSEMBLE_CONFIG.training_information
+            bagging.train()
+            prediction_result = bagging.predict()
+        else:
+            for model in MODELS:
+                dataset_settings = DatasetSettings(
+                    label_col='label',
+                    text_col='text',
+                    tokenizer_link=model
                 )
 
-                bagging.train()
-                bagging.predict()
-                
-            
-            if TESTING:
-                TEST_CONFIG.pretrained_model = model
-                train_model(dataset, TEST_CONFIG, labels_dropped=dataset_info.labels_dropped)
-                break
-            else:
-                for config in TRAIN_CONFIGS:
-                    config.pretrained_model = model
+                dataset = CustomDataset(dataset_settings, data_loader)
 
-                    train_model(dataset, config, labels_dropped=dataset_info.labels_dropped)
+                if TESTING:
+                    TEST_CONFIG.pretrained_model = model
+                    train_model(dataset, TEST_CONFIG, labels_dropped=dataset_info.labels_dropped)
+                    break
+                else:
+                    for config in TRAIN_CONFIGS:
+                        config.pretrained_model = model
+
+                        train_model(dataset, config, labels_dropped=dataset_info.labels_dropped)
