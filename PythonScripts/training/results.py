@@ -121,7 +121,7 @@ def extract_hyperparams_from_foldername(foldername: str):
         "early_stopping": early_stopping,
         "batch_size": batch_size}
 
-def gather_results_to_csv(base_path='../Experiments/March11th', output_csv="results_summary.csv"):
+def gather_results_to_csv(base_path='../Experiments/March18th-Cleaned', output_csv="results_summary.csv"):
     """Gather all results.json files and save them to a CSV."""
     all_results = []
     

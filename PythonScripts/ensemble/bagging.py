@@ -1,6 +1,7 @@
 import numpy as np
 import seaborn as sns
 import os
+import torch
 from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer, EarlyStoppingCallback
 from PythonScripts.training.training import TrainingInformation, compute_metrics
 from sklearn.utils import resample
@@ -57,6 +58,8 @@ class Bagging:
             callbacks = EarlyStoppingCallback(self.training_information.early_stopping_patience)
 
         for i in range(self.num_model):
+            print(f'Memory Allocated: {torch.cuda.memory_allocated()}')
+            torch.cuda.empty_cache()
             print(f'Training {i + 1}: {self.model_paths[i]}')
             sample = bootstrap_samples[i]
             model = AutoModelForSequenceClassification.from_pretrained(self.model_paths[i])
@@ -79,7 +82,8 @@ class Bagging:
             for path in self.model_paths:
                 model_info += path.replace("/", "") + '_'
 
-            return model_info + 'bagging'
+            return "10_Model"
+            # return model_info + 'bagging'
         
     def predict(self,
                 aggregation="majority",

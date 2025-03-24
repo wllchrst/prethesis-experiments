@@ -69,8 +69,10 @@ def get_synonyms(word: str) -> list[str]:
         return synonyms_dict[word]
     return []
 
-stop_words = load_stopwords("../../ImportantFiles/id.stopwords.02.01.2016.txt")
-synonyms_dict = load_synonyms("../../ImportantFiles/Tesaurus-BahasaIndonesia.txt")
+# stop_words = load_stopwords("../../ImportantFiles/id.stopwords.02.01.2016.txt")
+# synonyms_dict = load_synonyms("../../ImportantFiles/Tesaurus-BahasaIndonesia.txt")
+stop_words = load_stopwords("ImportantFiles/id.stopwords.02.01.2016.txt")
+synonyms_dict = load_synonyms("ImportantFiles/Tesaurus-BahasaIndonesia.txt")
 translator = Translator()
 
 def synonym_replacement(words: str, n: int) -> list[str]:
