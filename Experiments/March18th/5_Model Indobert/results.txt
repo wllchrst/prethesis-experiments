@@ -1,0 +1,24 @@
+Final Ensemble Accuracy: 0.7887
+Final Ensemble F1-score: 0.7891
+
+Classification Report:
+               precision    recall  f1-score   support
+
+           0       0.83      0.89      0.86       177
+           1       0.81      0.77      0.79       177
+           2       0.88      0.79      0.83       177
+           3       0.69      0.76      0.72       177
+           4       0.75      0.73      0.74       177
+
+    accuracy                           0.79       885
+   macro avg       0.79      0.79      0.79       885
+weighted avg       0.79      0.79      0.79       885
+
+BEST_CONFIG = TrainingInformation(
+       pretrained_model='',
+       dataset_name='IndonesiaDataset',
+       epoch=8,
+       folder_name_from_info=True,
+       dropout_probability=0.3,
+       weight_decay=0.2,
+    )
