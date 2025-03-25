@@ -28,7 +28,7 @@ MODELS = [
 
 DATASETS: list[DatasetInformation] = [
     # DatasetInformation(link='dair-ai/emotion' , labels_dropped=[],hf_dataset=True, augment=True, with_balancing=True, is_indonesian=False),
-    DatasetInformation(link='DataScript/indonesian_dataset_augmented_mapped_cleaned.csv', labels_dropped=[], augment=False, hf_dataset=False, with_balancing=False, is_indonesian=True),
+    DatasetInformation(link='DataScript/indonesian_dataset_augmented_mapped.csv', labels_dropped=[], augment=False, hf_dataset=False, with_balancing=False, is_indonesian=True),
     # DatasetInformation(link='../Experiments/Datasets/indo-data-review.csv', labels_dropped=[], augment=False, hf_dataset=False, with_balancing=False, is_indonesian=True),
     # DatasetInformation(link='../Experiments/Datasets/process_data.csv', labels_dropped=[], hf_dataset=False, augment=True, with_balancing=True, is_indonesian=False),
 ]
@@ -41,6 +41,15 @@ TEST_CONFIG = TrainingInformation(
     batch_size=8,
     folder_name_from_info=True    
 )
+
+BEST_CONFIG = TrainingInformation(
+       pretrained_model='',
+       dataset_name='IndonesiaDataset',
+       epoch=10,
+       folder_name_from_info=True,
+       dropout_probability=0.1,
+       weight_decay=0.3,
+    )
 
 TRAIN_CONFIGS = [
     # ! BASE
@@ -102,9 +111,8 @@ TRAIN_CONFIGS = [
 ENSEMBLE_CONFIG = BaggingConfig(
     model_paths=[
         'indobenchmark/indobert-base-p1', 'indobenchmark/indobert-base-p1', 'indobenchmark/indobert-base-p1', 
-        'indobenchmark/indobert-base-p1', 'indobenchmark/indobert-base-p1', 'indobenchmark/indobert-base-p1', 'indobenchmark/indobert-base-p1', 'indobenchmark/indobert-base-p1', 
         'indobenchmark/indobert-base-p1', 'indobenchmark/indobert-base-p1',],
-    num_model=10,
-    training_information=TRAIN_CONFIGS[0],
+    num_model=5,
+    training_information=BEST_CONFIG,
     tokenizer='indobenchmark/indobert-base-p1'
 )
