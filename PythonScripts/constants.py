@@ -28,7 +28,7 @@ MODELS = [
 
 DATASETS: list[DatasetInformation] = [
     # DatasetInformation(link='dair-ai/emotion' , labels_dropped=[],hf_dataset=True, augment=True, with_balancing=True, is_indonesian=False),
-    DatasetInformation(link='DataScript/indonesian_dataset_augmented_mapped.csv', labels_dropped=[], augment=False, hf_dataset=False, with_balancing=False, is_indonesian=True),
+    DatasetInformation(link='DataScript/indonesian_dataset_augmented_mapped_cleaned.csv', labels_dropped=[], augment=False, hf_dataset=False, with_balancing=False, is_indonesian=True),
     # DatasetInformation(link='../Experiments/Datasets/indo-data-review.csv', labels_dropped=[], augment=False, hf_dataset=False, with_balancing=False, is_indonesian=True),
     # DatasetInformation(link='../Experiments/Datasets/process_data.csv', labels_dropped=[], hf_dataset=False, augment=True, with_balancing=True, is_indonesian=False),
 ]
@@ -47,17 +47,16 @@ TRAIN_CONFIGS = [
     TrainingInformation(
        pretrained_model='',
        dataset_name='IndonesiaDataset',
-       epoch=6,
-       dropout_probability=0.4,
-       batch_size=16,
+       epoch=8,
        folder_name_from_info=True,
-       weight_decay=0.3
+       dropout_probability=0.25,
+       weight_decay=0.25,
     ),
     # ! WITH DROP OUT 0.3
     TrainingInformation(
         pretrained_model='',
         dataset_name='IndonesiaDataset',
-        epoch=3,
+        epoch=10,
         dropout_probability=0.3,
         batch_size=8,
         folder_name_from_info=True
@@ -66,7 +65,7 @@ TRAIN_CONFIGS = [
     TrainingInformation(
         pretrained_model='',
         dataset_name='IndonesiaDataset',
-        epoch=3,
+        epoch=10,
         dropout_probability=0.5,
         batch_size=8,
         folder_name_from_info=True
@@ -75,7 +74,7 @@ TRAIN_CONFIGS = [
     TrainingInformation(
         pretrained_model='',
         dataset_name='IndonesiaDataset',
-        epoch=3,
+        epoch=10,
         dropout_probability=0.1,
         batch_size=16,
         folder_name_from_info=True
@@ -84,7 +83,7 @@ TRAIN_CONFIGS = [
     TrainingInformation(
         pretrained_model='',
         dataset_name='IndonesiaDataset',
-        epoch=3,
+        epoch=10,
         dropout_probability=0.1,
         batch_size=8,
         folder_name_from_info=True,
@@ -93,7 +92,7 @@ TRAIN_CONFIGS = [
     TrainingInformation(
         pretrained_model='',
         dataset_name='IndonesiaDataset',
-        epoch=3,
+        epoch=10,
         dropout_probability=0.3,
         batch_size=32,
         folder_name_from_info=True,
@@ -101,8 +100,11 @@ TRAIN_CONFIGS = [
 ]
 
 ENSEMBLE_CONFIG = BaggingConfig(
-    model_paths=['indobenchmark/indobert-base-p1', 'indobenchmark/indobert-base-p1'],
-    num_model=2,
+    model_paths=[
+        'indobenchmark/indobert-base-p1', 'indobenchmark/indobert-base-p1', 'indobenchmark/indobert-base-p1', 
+        'indobenchmark/indobert-base-p1', 'indobenchmark/indobert-base-p1', 'indobenchmark/indobert-base-p1', 'indobenchmark/indobert-base-p1', 'indobenchmark/indobert-base-p1', 
+        'indobenchmark/indobert-base-p1', 'indobenchmark/indobert-base-p1',],
+    num_model=10,
     training_information=TRAIN_CONFIGS[0],
     tokenizer='indobenchmark/indobert-base-p1'
 )

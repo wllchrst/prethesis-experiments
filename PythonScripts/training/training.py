@@ -123,7 +123,7 @@ def train_model(
         
         
 def save_training_result(results: dict[str, float], training_information: "TrainingInformation"\
-    , dataset_augmented: bool, dataset_name: str, save_path='../Experiments/March11th/', balanced=True,
+    , dataset_augmented: bool, dataset_name: str, save_path='../Experiments/March18th-Cleaned/', balanced=True,
     labels_dropped=[], folder_path='') -> str:
     '''
     Save results from evaluation after training using pretrained model.
